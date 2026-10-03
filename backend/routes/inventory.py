@@ -3,7 +3,14 @@ import json
 from pathlib import Path
 
 router = APIRouter()
-DATA = Path(__file__).resolve().parents[2] / "data" / "synthetic" / "inventory.json"
+
+DATA = (
+    Path(__file__).resolve().parents[1]
+    / "data"
+    / "synthetic"
+    / "inventory.json"
+)
+
 
 @router.get("/")
 def inventory():
