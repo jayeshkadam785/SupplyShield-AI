@@ -1,0 +1,14 @@
+export default function LogisticsMap() {
+  return (<>
+    <div className="header"><div><h1>Logistics & GIS</h1><div className="muted">Bases, depots, vehicles and route intelligence</div></div></div>
+    <div className="card" style={{minHeight:480,display:"flex",alignItems:"center",justifyContent:"center",background:"#dbeafe"}}>
+      <div style={{textAlign:"center"}}><h2>Interactive GIS Map</h2><p>Leaflet + OpenStreetMap integration point</p><p>Base C → Route B → Depot 01</p><span className="status good">Recommended Route</span></div>
+    </div>
+    <div className="grid section">
+      <div className="card"><b>Route A</b><div className="kpi">72/100</div><span className="status warning">HIGH RISK</span></div>
+      <div className="card"><b>Route B</b><div className="kpi">34/100</div><span className="status good">LOWER RISK</span></div>
+      <div className="card"><b>Vehicles</b><div className="kpi">18</div><span className="muted">Active</span></div>
+      <div className="card"><b>ETA</b><div className="kpi">5.8h</div><span className="muted">Route B</span></div>
+    </div>
+  </>);
+}
