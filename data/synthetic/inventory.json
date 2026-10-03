@@ -11,6 +11,7 @@ DATA = (
     / "inventory.json"
 )
 
+
 @router.get("/")
 def inventory():
     with open(DATA, "r", encoding="utf-8") as f:
