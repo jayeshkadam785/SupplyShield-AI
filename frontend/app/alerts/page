@@ -1,0 +1,16 @@
+const alerts = [
+  ["CRITICAL","Base C","Water shortage predicted in 3 days","Replenish 2,500 L"],
+  ["HIGH","Route A","Heavy rainfall increases route risk","Prefer Route B"],
+  ["MEDIUM","Fuel","Consumption spike detected","Review demand"],
+  ["HIGH","Vehicle T-09","Delivery delay risk","Reassign shipment"]
+];
+export default function Alerts() {
+  return (<>
+    <div className="header"><div><h1>Alerts & Decision</h1><div className="muted">Predictive alerts + recommended actions</div></div></div>
+    <div className="section">
+      <table className="table"><thead><tr><th>Priority</th><th>Location</th><th>Alert</th><th>Recommended Action</th></tr></thead>
+      <tbody>{alerts.map((a,i)=><tr key={i}><td><span className={`status ${a[0]==="CRITICAL"?"critical":a[0]==="HIGH"?"warning":"good"}`}>{a[0]}</span></td><td>{a[1]}</td><td>{a[2]}</td><td>{a[3]}</td></tr>)}</tbody></table>
+    </div>
+    <div className="section card"><h2>AI Recommendation</h2><p><b>Destination:</b> Base C</p><p><b>Supply:</b> 2,500 L Water</p><p><b>Vehicle:</b> Truck T-04</p><p><b>Route:</b> Route B</p><p><b>Dispatch:</b> Within 12 hours</p><p className="muted">Why: shortage predicted in 3 days, Route A has higher weather risk, and T-04 has sufficient capacity.</p></div>
+  </>);
+}
