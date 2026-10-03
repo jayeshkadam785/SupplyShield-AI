@@ -1,0 +1,11 @@
+export default function Scenarios() {
+  return (<>
+    <div className="header"><div><h1>What-if Scenario Simulator</h1><div className="muted">Test disruptions and compare outcomes</div></div></div>
+    <div className="grid">
+      {["Normal Conditions","Heavy Rain","Route A Blocked","Demand +20%","Vehicle Breakdown","Supply Delay"].map((s,i)=>
+        <div className="card" key={s}><h3>{s}</h3><p className="muted">Simulate impact on inventory, route risk, ETA and vehicle requirement.</p><button className="btn">Run Scenario</button></div>
+      )}
+    </div>
+    <div className="section card"><h2>Simulation Result</h2><p>Example: Heavy Rain → Route A risk 72/100 → ETA +2.1 hours → Route B recommended.</p></div>
+  </>);
+}
