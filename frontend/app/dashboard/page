@@ -1,0 +1,37 @@
+const alerts = [
+  ["Base C", "Water shortage predicted in 3 days", "CRITICAL"],
+  ["Route A", "Heavy rainfall may increase route risk", "WARNING"],
+  ["Fuel", "Consumption increased by 18%", "WARNING"]
+];
+
+export default function Dashboard() {
+  return (
+    <>
+      <div className="header">
+        <div><h1>Command Dashboard</h1><div className="muted">Predictive Logistics & Forward Supply Chain</div></div>
+        <span className="status good">● System Online</span>
+      </div>
+      <div className="hero">
+        <h2>Monitor → Predict → Simulate → Optimize → Recommend</h2>
+        <p>AI-powered logistics decision support for forward formations.</p>
+      </div>
+      <div className="grid">
+        <div className="card"><div className="muted">Forward Bases</div><div className="kpi">12</div></div>
+        <div className="card"><div className="muted">Inventory Items</div><div className="kpi">248</div></div>
+        <div className="card"><div className="muted">Predicted Shortages</div><div className="kpi">7</div></div>
+        <div className="card"><div className="muted">Active Vehicles</div><div className="kpi">18</div></div>
+      </div>
+      <div className="section card">
+        <h2>AI Priority Actions</h2>
+        <p>1. Replenish water at Base C within 12 hours.</p>
+        <p>2. Prefer Route B due to lower weather risk.</p>
+        <p>3. Assign Truck T-04 for the 2,500 L water movement.</p>
+      </div>
+      <div className="section">
+        <h2>Recent Alerts</h2>
+        <table className="table"><thead><tr><th>Location</th><th>Alert</th><th>Priority</th></tr></thead>
+        <tbody>{alerts.map((a,i)=><tr key={i}><td>{a[0]}</td><td>{a[1]}</td><td><span className={`status ${a[2]==="CRITICAL"?"critical":"warning"}`}>{a[2]}</span></td></tr>)}</tbody></table>
+      </div>
+    </>
+  );
+}
