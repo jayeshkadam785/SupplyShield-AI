@@ -1,0 +1,21 @@
+# SIH26251 Architecture
+
+## Phase 1
+
+Next.js frontend → FastAPI backend → AI/ML services → synthetic JSON data.
+
+External services:
+- OpenStreetMap / Leaflet
+- OSRM
+- Open-Meteo
+
+## Phase 2
+
+Supabase can be added later for:
+- authentication
+- persistent database
+- real-time inventory
+- IoT storage
+- multi-user access
+
+The initial code intentionally avoids Supabase.
