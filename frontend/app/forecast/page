@@ -1,0 +1,15 @@
+export default function Forecast() {
+  return (<>
+    <div className="header"><div><h1>AI Demand Forecast</h1><div className="muted">7 / 14 / 30-day prediction view</div></div></div>
+    <div className="grid">
+      <div className="card"><b>Base C — Water</b><div className="kpi">2,520 L</div><div className="muted">14-day forecast</div></div>
+      <div className="card"><b>Base C — Fuel</b><div className="kpi">4,100 L</div><div className="muted">14-day forecast</div></div>
+      <div className="card"><b>Demand Trend</b><div className="kpi">+14%</div><div className="muted">vs previous period</div></div>
+      <div className="card"><b>Forecast Confidence</b><div className="kpi">91%</div><div className="muted">synthetic model estimate</div></div>
+    </div>
+    <div className="section card">
+      <h2>Explainable Forecast</h2>
+      <p>✓ Recent consumption increased.</p><p>✓ Current inventory is below safety stock.</p><p>✓ Forecast demand is higher for the next 7 days.</p>
+    </div>
+  </>);
+}
