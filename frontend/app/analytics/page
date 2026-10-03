@@ -1,0 +1,12 @@
+export default function Analytics() {
+  return (<>
+    <div className="header"><div><h1>Analytics</h1><div className="muted">Supply-chain performance overview</div></div></div>
+    <div className="grid">
+      <div className="card"><div className="muted">Average Delivery Time</div><div className="kpi">5.8h</div></div>
+      <div className="card"><div className="muted">Fleet Utilization</div><div className="kpi">72%</div></div>
+      <div className="card"><div className="muted">Forecast Accuracy</div><div className="kpi">91%</div></div>
+      <div className="card"><div className="muted">Critical Alerts</div><div className="kpi">4</div></div>
+    </div>
+    <div className="section card"><h2>Planned Analytics</h2><p>Consumption trends • Inventory trends • Route performance • Vehicle utilization • Risk trends • Forecast accuracy</p></div>
+  </>);
+}
