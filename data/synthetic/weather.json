@@ -1,0 +1,16 @@
+[
+  {
+    "location": "Route A",
+    "condition": "Heavy Rain",
+    "temperature_c": 22,
+    "wind_kmh": 28,
+    "rain_probability": 0.82
+  },
+  {
+    "location": "Route B",
+    "condition": "Cloudy",
+    "temperature_c": 24,
+    "wind_kmh": 15,
+    "rain_probability": 0.31
+  }
+]

@@ -1,0 +1,23 @@
+[
+  {
+    "id": "T-04",
+    "type": "Supply Truck",
+    "capacity_kg": 3000,
+    "available": true,
+    "status": "AVAILABLE"
+  },
+  {
+    "id": "T-09",
+    "type": "Supply Truck",
+    "capacity_kg": 5000,
+    "available": false,
+    "status": "IN TRANSIT"
+  },
+  {
+    "id": "T-12",
+    "type": "Utility Vehicle",
+    "capacity_kg": 1500,
+    "available": true,
+    "status": "AVAILABLE"
+  }
+]

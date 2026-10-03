@@ -1,0 +1,16 @@
+[
+  {
+    "id": "R-A",
+    "name": "Route A",
+    "distance_km": 180,
+    "eta_hours": 5.2,
+    "risk_score": 72
+  },
+  {
+    "id": "R-B",
+    "name": "Route B",
+    "distance_km": 205,
+    "eta_hours": 5.8,
+    "risk_score": 34
+  }
+]

@@ -1,0 +1,22 @@
+[
+  {
+    "base": "Base A",
+    "item": "Water",
+    "daily_average": 230
+  },
+  {
+    "base": "Base B",
+    "item": "Fuel",
+    "daily_average": 300
+  },
+  {
+    "base": "Base C",
+    "item": "Water",
+    "daily_average": 180
+  },
+  {
+    "base": "Base D",
+    "item": "Medicine",
+    "daily_average": 69
+  }
+]
