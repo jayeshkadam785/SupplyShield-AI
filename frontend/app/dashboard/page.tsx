@@ -6,37 +6,33 @@ type Role = "admin" | "commander" | "captain";
 
 type InventoryItem = {
   id: number;
-  name: string;
+  item: string;
   category: string;
-  quantity: number;
-  minStock: number;
-  unit: string;
+  stock: number;
+  min: number;
   location: string;
+  status: "Healthy" | "Low" | "Critical";
 };
 
 type RouteItem = {
   id: number;
   name: string;
-  from: string;
-  to: string;
-  status: "Active" | "Delayed" | "At Risk" | "Completed";
+  origin: string;
+  destination: string;
+  distance: string;
   eta: string;
+  risk: "Low" | "Medium" | "High";
+  status: "Active" | "Delayed" | "Blocked";
 };
 
 type AlertItem = {
   id: number;
   title: string;
-  severity: "Critical" | "High" | "Medium" | "Low";
+  description: string;
+  severity: "Low" | "Medium" | "High" | "Critical";
   location: string;
-  status: "Open" | "Resolved";
-};
-
-type BaseItem = {
-  id: number;
-  name: string;
-  location: string;
-  readiness: number;
-  stock: number;
+  time: string;
+  resolved: boolean;
 };
 
 type UserItem = {
@@ -50,145 +46,148 @@ type UserItem = {
 const initialInventory: InventoryItem[] = [
   {
     id: 1,
-    name: "Fuel",
-    category: "Energy",
-    quantity: 780,
-    minStock: 300,
-    unit: "L",
-    location: "Northern Base",
+    item: "Rice",
+    category: "Food",
+    stock: 820,
+    min: 500,
+    location: "Base Alpha",
+    status: "Healthy",
   },
   {
     id: 2,
-    name: "Food Supplies",
-    category: "Food",
-    quantity: 860,
-    minStock: 400,
-    unit: "Units",
-    location: "Western Base",
+    item: "Medical Kits",
+    category: "Medical",
+    stock: 140,
+    min: 200,
+    location: "Base Alpha",
+    status: "Low",
   },
   {
     id: 3,
-    name: "Medical Supplies",
-    category: "Medical",
-    quantity: 520,
-    minStock: 350,
-    unit: "Units",
-    location: "Eastern Base",
+    item: "Diesel",
+    category: "Fuel",
+    stock: 92,
+    min: 150,
+    location: "Base Bravo",
+    status: "Critical",
   },
   {
     id: 4,
-    name: "Spare Parts",
-    category: "Equipment",
-    quantity: 390,
-    minStock: 450,
-    unit: "Units",
-    location: "Central Base",
+    item: "Water",
+    category: "Essential",
+    stock: 670,
+    min: 400,
+    location: "Base Charlie",
+    status: "Healthy",
   },
   {
     id: 5,
-    name: "Water",
-    category: "Essential",
-    quantity: 920,
-    minStock: 500,
-    unit: "L",
-    location: "Northern Base",
+    item: "Ammunition",
+    category: "Defence",
+    stock: 340,
+    min: 250,
+    location: "Base Bravo",
+    status: "Healthy",
+  },
+  {
+    id: 6,
+    item: "Blankets",
+    category: "Relief",
+    stock: 180,
+    min: 300,
+    location: "Base Charlie",
+    status: "Low",
   },
 ];
 
 const initialRoutes: RouteItem[] = [
   {
     id: 1,
-    name: "Route Alpha",
-    from: "Central Base",
-    to: "Northern Base",
-    status: "Active",
+    name: "Route Alpha-01",
+    origin: "Central Depot",
+    destination: "Base Alpha",
+    distance: "84 km",
     eta: "2h 15m",
+    risk: "Low",
+    status: "Active",
   },
   {
     id: 2,
-    name: "Route Bravo",
-    from: "Western Base",
-    to: "Central Base",
+    name: "Route Bravo-07",
+    origin: "Central Depot",
+    destination: "Base Bravo",
+    distance: "126 km",
+    eta: "4h 10m",
+    risk: "High",
     status: "Delayed",
-    eta: "5h 30m",
   },
   {
     id: 3,
-    name: "Route Charlie",
-    from: "Eastern Base",
-    to: "Northern Base",
+    name: "Route Charlie-03",
+    origin: "Base Alpha",
+    destination: "Base Charlie",
+    distance: "61 km",
+    eta: "1h 35m",
+    risk: "Medium",
     status: "Active",
-    eta: "3h 10m",
   },
   {
     id: 4,
-    name: "Route Delta",
-    from: "Central Base",
-    to: "Eastern Base",
-    status: "At Risk",
-    eta: "7h 20m",
+    name: "Route Delta-09",
+    origin: "Central Depot",
+    destination: "Forward Post",
+    distance: "178 km",
+    eta: "5h 40m",
+    risk: "High",
+    status: "Blocked",
   },
 ];
 
 const initialAlerts: AlertItem[] = [
   {
     id: 1,
-    title: "Fuel shortage predicted",
-    severity: "High",
-    location: "Northern Base",
-    status: "Open",
-  },
-  {
-    id: 2,
-    title: "Route obstruction detected",
+    title: "Critical diesel shortage",
+    description: "Fuel inventory below minimum threshold.",
     severity: "Critical",
-    location: "Route Delta",
-    status: "Open",
-  },
-  {
-    id: 3,
-    title: "Medical stock below threshold",
-    severity: "Medium",
-    location: "Eastern Base",
-    status: "Open",
-  },
-  {
-    id: 4,
-    title: "Demand spike expected",
-    severity: "High",
-    location: "Western Base",
-    status: "Resolved",
-  },
-];
-
-const initialBases: BaseItem[] = [
-  {
-    id: 1,
-    name: "Northern Base",
-    location: "Sector N-01",
-    readiness: 82,
-    stock: 78,
+    location: "Base Bravo",
+    time: "8 min ago",
+    resolved: false,
   },
   {
     id: 2,
-    name: "Western Base",
-    location: "Sector W-04",
-    readiness: 64,
-    stock: 64,
+    title: "Route delay detected",
+    description: "Heavy traffic and weather affecting delivery.",
+    severity: "High",
+    location: "Route Bravo-07",
+    time: "22 min ago",
+    resolved: false,
   },
   {
     id: 3,
-    name: "Eastern Base",
-    location: "Sector E-02",
-    readiness: 91,
-    stock: 91,
+    title: "Medical stock low",
+    description: "Medical kits require replenishment.",
+    severity: "Medium",
+    location: "Base Alpha",
+    time: "41 min ago",
+    resolved: false,
   },
   {
     id: 4,
-    name: "Central Base",
-    location: "Sector C-01",
-    readiness: 47,
-    stock: 47,
+    title: "Weather warning",
+    description: "Heavy rainfall expected in the northern sector.",
+    severity: "High",
+    location: "Northern Sector",
+    time: "1 hr ago",
+    resolved: false,
+  },
+  {
+    id: 5,
+    title: "Water supply stable",
+    description: "Inventory is above operational threshold.",
+    severity: "Low",
+    location: "Base Charlie",
+    time: "2 hrs ago",
+    resolved: true,
   },
 ];
 
@@ -202,156 +201,159 @@ const initialUsers: UserItem[] = [
   },
   {
     id: 2,
-    name: "Operations Commander",
+    name: "Northern Commander",
     email: "commander@supplyshield.ai",
     role: "commander",
     status: "Active",
   },
   {
     id: 3,
-    name: "Field Captain",
-    email: "captain@supplyshield.ai",
+    name: "Captain Arjun",
+    email: "captain1@supplyshield.ai",
     role: "captain",
     status: "Active",
   },
-];
-
-const forecastData = [
-  { day: "Day 1", demand: 420 },
-  { day: "Day 2", demand: 455 },
-  { day: "Day 3", demand: 480 },
-  { day: "Day 4", demand: 510 },
-  { day: "Day 5", demand: 535 },
-  { day: "Day 6", demand: 560 },
-  { day: "Day 7", demand: 590 },
+  {
+    id: 4,
+    name: "Captain Vikram",
+    email: "captain2@supplyshield.ai",
+    role: "captain",
+    status: "Inactive",
+  },
 ];
 
 const roleMeta = {
   admin: {
-    title: "Admin Command Center",
-    subtitle: "System-wide defence logistics control",
-    badge: "SYSTEM ADMIN",
-    initials: "AD",
+    title: "System Administrator",
+    subtitle: "Complete supply network control",
   },
   commander: {
-    title: "Commander Operations",
-    subtitle: "Strategic supply-chain command overview",
-    badge: "COMMANDER",
-    initials: "CM",
+    title: "Regional Commander",
+    subtitle: "Operational logistics command center",
   },
   captain: {
-    title: "Captain Field Dashboard",
-    subtitle: "Forward-base logistics and field operations",
-    badge: "CAPTAIN",
-    initials: "CP",
+    title: "Field Captain",
+    subtitle: "Field-level supply operations",
+  },
+};
+
+const navItems = [
+  { id: "overview", label: "Overview", icon: "⌂" },
+  { id: "supply", label: "Supply Chain", icon: "⇄" },
+  { id: "inventory", label: "Inventory", icon: "▣" },
+  { id: "routes", label: "Routes", icon: "⌁" },
+  { id: "alerts", label: "Risk Alerts", icon: "!" },
+  { id: "analytics", label: "Analytics", icon: "◫" },
+  { id: "forecast", label: "Forecast", icon: "◒" },
+  { id: "scenarios", label: "Scenarios", icon: "◇" },
+  { id: "reports", label: "Reports", icon: "▤" },
+];
+
+const pageMeta: Record<string, { title: string; subtitle: string }> = {
+  overview: {
+    title: "Operational Overview",
+    subtitle: "Real-time synthetic logistics intelligence",
+  },
+  supply: {
+    title: "Supply Chain",
+    subtitle: "Monitor the complete supply movement network",
+  },
+  inventory: {
+    title: "Inventory Management",
+    subtitle: "Track stock levels and replenishment requirements",
+  },
+  routes: {
+    title: "Route Intelligence",
+    subtitle: "Monitor routes, delays and transportation risks",
+  },
+  alerts: {
+    title: "Risk Alerts",
+    subtitle: "Prioritized operational warnings and incidents",
+  },
+  analytics: {
+    title: "Analytics",
+    subtitle: "Operational performance and logistics KPIs",
+  },
+  forecast: {
+    title: "Demand Forecast",
+    subtitle: "AI-style synthetic demand predictions",
+  },
+  scenarios: {
+    title: "Scenario Simulation",
+    subtitle: "Test possible logistics disruptions",
+  },
+  reports: {
+    title: "Reports",
+    subtitle: "Generate operational intelligence reports",
+  },
+  manage: {
+    title: "Manage System",
+    subtitle: "Configure synthetic logistics operations",
+  },
+  users: {
+    title: "User Management",
+    subtitle: "Manage commanders, captains and administrators",
+  },
+  requests: {
+    title: "Supply Requests",
+    subtitle: "Manage field-level supply requirements",
   },
 };
 
 export default function DashboardPage() {
-  const [loggedIn, setLoggedIn] = useState(false);
   const [role, setRole] = useState<Role>("admin");
-
-  const [activePage, setActivePage] = useState("Overview");
+  const [activePage, setActivePage] = useState("overview");
   const [theme, setTheme] = useState<"dark" | "light">("dark");
 
   const [inventory, setInventory] =
     useState<InventoryItem[]>(initialInventory);
 
-  const [routes, setRoutes] = useState<RouteItem[]>(initialRoutes);
+  const [routes, setRoutes] =
+    useState<RouteItem[]>(initialRoutes);
 
-  const [alerts, setAlerts] = useState<AlertItem[]>(initialAlerts);
+  const [alerts, setAlerts] =
+    useState<AlertItem[]>(initialAlerts);
 
-  const [bases, setBases] = useState<BaseItem[]>(initialBases);
-
-  const [users, setUsers] = useState<UserItem[]>(initialUsers);
-
-  const [search, setSearch] = useState("");
-
-  const [modal, setModal] = useState<
-    | "inventory"
-    | "route"
-    | "alert"
-    | "base"
-    | "user"
-    | "scenario"
-    | null
-  >(null);
-
-  const [editingInventory, setEditingInventory] =
-    useState<InventoryItem | null>(null);
-
-  const [editingRoute, setEditingRoute] =
-    useState<RouteItem | null>(null);
+  const [users, setUsers] =
+    useState<UserItem[]>(initialUsers);
 
   const [message, setMessage] = useState("");
 
-  const meta = roleMeta[role];
+  const meta = pageMeta[activePage] ?? roleMeta[role];
 
-  const totalInventory = inventory.reduce(
-    (sum, item) => sum + item.quantity,
-    0
-  );
+  const activeAlerts = alerts.filter((a) => !a.resolved).length;
 
-  const openAlerts = alerts.filter((a) => a.status === "Open").length;
-
-  const activeRoutes = routes.filter(
-    (r) => r.status === "Active"
+  const criticalInventory = inventory.filter(
+    (item) => item.status === "Critical"
   ).length;
 
-  const averageReadiness = Math.round(
-    bases.reduce((sum, base) => sum + base.readiness, 0) /
-      bases.length
-  );
-
-  const filteredInventory = useMemo(() => {
-    const query = search.toLowerCase();
-
-    return inventory.filter(
-      (item) =>
-        item.name.toLowerCase().includes(query) ||
-        item.category.toLowerCase().includes(query) ||
-        item.location.toLowerCase().includes(query)
-    );
-  }, [inventory, search]);
+  const delayedRoutes = routes.filter(
+    (route) => route.status !== "Active"
+  ).length;
 
   function showMessage(text: string) {
     setMessage(text);
 
-    setTimeout(() => {
+    window.setTimeout(() => {
       setMessage("");
     }, 2500);
   }
 
-  function deleteInventory(id: number) {
-    setInventory((items) => items.filter((item) => item.id !== id));
-    showMessage("Inventory item deleted");
-  }
-
-  function deleteRoute(id: number) {
-    setRoutes((items) => items.filter((item) => item.id !== id));
-    showMessage("Route deleted");
-  }
-
   function resolveAlert(id: number) {
-    setAlerts((items) =>
-      items.map((item) =>
-        item.id === id
-          ? { ...item, status: "Resolved" }
-          : item
+    setAlerts((current) =>
+      current.map((alert) =>
+        alert.id === id
+          ? { ...alert, resolved: true }
+          : alert
       )
     );
 
-    showMessage("Alert resolved");
-  }
-
-  function deleteBase(id: number) {
-    setBases((items) => items.filter((item) => item.id !== id));
-    showMessage("Base removed");
+    showMessage("Alert resolved successfully.");
   }
 
   function toggleUser(id: number) {
-    setUsers((items) =>
-      items.map((user) =>
+    setUsers((current) =>
+      current.map((user) =>
         user.id === id
           ? {
               ...user,
@@ -364,732 +366,532 @@ export default function DashboardPage() {
       )
     );
 
-    showMessage("User status updated");
+    showMessage("User status updated.");
   }
 
-  if (!loggedIn) {
-    return (
-      <main className="ss-login">
-        <div className="ss-login-card">
-          <div className="ss-logo">
-            <div className="ss-logo-icon">S</div>
-            <div>
-              <h1>SupplyShield AI</h1>
-              <span>Defence Logistics Intelligence</span>
-            </div>
-          </div>
-
-          <div className="ss-demo-label">
-            SYNTHETIC DEMO ENVIRONMENT
-          </div>
-
-          <h2>Choose your command role</h2>
-
-          <div className="ss-role-grid">
-            {(Object.keys(roleMeta) as Role[]).map((item) => (
-              <button
-                key={item}
-                className={`ss-role-card ${
-                  role === item ? "selected" : ""
-                }`}
-                onClick={() => setRole(item)}
-              >
-                <div className="ss-role-avatar">
-                  {roleMeta[item].initials}
-                </div>
-
-                <strong>{roleMeta[item].badge}</strong>
-
-                <span>{roleMeta[item].title}</span>
-              </button>
-            ))}
-          </div>
-
-          <button
-            className="ss-primary-btn ss-login-btn"
-            onClick={() => setLoggedIn(true)}
-          >
-            Enter Dashboard →
-          </button>
-        </div>
-      </main>
-    );
+  function changeRole(nextRole: Role) {
+    setRole(nextRole);
+    setActivePage("overview");
+    showMessage(`Switched to ${nextRole} dashboard.`);
   }
 
   return (
     <main
-      className={`ss-app ${
-        theme === "light" ? "ss-light" : "ss-dark"
+      className={`dashboard-shell ${
+        theme === "light" ? "light-theme" : ""
       }`}
     >
-      <aside className="ss-sidebar">
-        <div className="ss-brand">
-          <div className="ss-logo-icon">S</div>
+      <aside className="sidebar">
+        <div className="brand">
+          <div className="brand-mark">S</div>
+
           <div>
             <strong>SupplyShield</strong>
-            <small>AI Logistics</small>
+            <span>AI Logistics</span>
           </div>
         </div>
 
-        <div className="ss-user-mini">
-          <div className="ss-avatar">{meta.initials}</div>
+        <div className="role-box">
+          <span className="small-label">ACTIVE ROLE</span>
 
-          <div>
-            <strong>{meta.badge}</strong>
-            <small>Online</small>
-          </div>
+          <select
+            value={role}
+            onChange={(e) =>
+              changeRole(e.target.value as Role)
+            }
+          >
+            <option value="admin">Administrator</option>
+            <option value="commander">Commander</option>
+            <option value="captain">Captain</option>
+          </select>
         </div>
 
-        <nav className="ss-nav">
-          <NavButton
-            label="Overview"
-            active={activePage === "Overview"}
-            onClick={() => setActivePage("Overview")}
-            icon="⌂"
-          />
+        <nav className="sidebar-nav">
+          <div className="nav-section-title">
+            COMMAND CENTER
+          </div>
 
-          <NavButton
-            label="Supply Chain"
-            active={activePage === "Supply Chain"}
-            onClick={() => setActivePage("Supply Chain")}
-            icon="⇄"
-          />
-
-          <NavButton
-            label="Inventory"
-            active={activePage === "Inventory"}
-            onClick={() => setActivePage("Inventory")}
-            icon="▣"
-          />
-
-          <NavButton
-            label="Routes"
-            active={activePage === "Routes"}
-            onClick={() => setActivePage("Routes")}
-            icon="⌁"
-          />
-
-          <NavButton
-            label="Risk Alerts"
-            active={activePage === "Risk Alerts"}
-            onClick={() => setActivePage("Risk Alerts")}
-            icon="⚠"
-            count={openAlerts}
-          />
-
-          <NavButton
-            label="Analytics"
-            active={activePage === "Analytics"}
-            onClick={() => setActivePage("Analytics")}
-            icon="▥"
-          />
-
-          <NavButton
-            label="Forecast"
-            active={activePage === "Forecast"}
-            onClick={() => setActivePage("Forecast")}
-            icon="◔"
-          />
-
-          <NavButton
-            label="Scenarios"
-            active={activePage === "Scenarios"}
-            onClick={() => setActivePage("Scenarios")}
-            icon="◇"
-          />
-
-          <NavButton
-            label="Reports"
-            active={activePage === "Reports"}
-            onClick={() => setActivePage("Reports")}
-            icon="▤"
-          />
+          {navItems.map((item) => (
+            <NavButton
+              key={item.id}
+              active={activePage === item.id}
+              label={item.label}
+              icon={item.icon}
+              onClick={() => setActivePage(item.id)}
+              badge={
+                item.id === "alerts"
+                  ? activeAlerts
+                  : undefined
+              }
+            />
+          ))}
 
           {role === "admin" && (
             <>
-              <div className="ss-nav-title">
-                ADMIN CONTROLS
+              <div className="nav-section-title admin-title">
+                ADMINISTRATION
               </div>
 
               <NavButton
+                active={activePage === "manage"}
                 label="Manage System"
-                active={activePage === "Manage System"}
-                onClick={() =>
-                  setActivePage("Manage System")
-                }
                 icon="⚙"
+                onClick={() => setActivePage("manage")}
               />
 
               <NavButton
+                active={activePage === "users"}
                 label="User Management"
-                active={activePage === "User Management"}
-                onClick={() =>
-                  setActivePage("User Management")
-                }
                 icon="♙"
+                onClick={() => setActivePage("users")}
               />
             </>
           )}
 
           {role === "captain" && (
-            <NavButton
-              label="Supply Requests"
-              active={activePage === "Supply Requests"}
-              onClick={() =>
-                setActivePage("Supply Requests")
-              }
-              icon="＋"
-            />
+            <>
+              <div className="nav-section-title admin-title">
+                FIELD OPERATIONS
+              </div>
+
+              <NavButton
+                active={activePage === "requests"}
+                label="Supply Requests"
+                icon="＋"
+                onClick={() => setActivePage("requests")}
+              />
+            </>
           )}
         </nav>
 
-        <div className="ss-sidebar-bottom">
+        <div className="sidebar-bottom">
           <button
-            className="ss-theme-btn"
+            className="theme-btn"
             onClick={() =>
-              setTheme(theme === "dark" ? "light" : "dark")
+              setTheme((current) =>
+                current === "dark" ? "light" : "dark"
+              )
             }
           >
             {theme === "dark" ? "☀ Light Mode" : "☾ Dark Mode"}
           </button>
 
-          <button
-            className="ss-signout"
-            onClick={() => setLoggedIn(false)}
-          >
-            ⇥ Sign out
-          </button>
+          <div className="system-status">
+            <span className="status-dot" />
+            All systems operational
+          </div>
         </div>
       </aside>
 
-      <section className="ss-content">
-        <header className="ss-header">
+      <section className="dashboard-main">
+        <header className="topbar">
           <div>
+            <div className="breadcrumb">
+              SUPPLYSHIELD AI / {role.toUpperCase()}
+            </div>
+
             <h1>{meta.title}</h1>
+
             <p>{meta.subtitle}</p>
           </div>
 
-          <div className="ss-header-actions">
-            <span className="ss-live">
-              <i />
-              LIVE DEMO DATA
-            </span>
+          <div className="topbar-right">
+            <div className="live-status">
+              <span className="status-dot" />
+              LIVE
+            </div>
 
-            <div className="ss-header-avatar">
-              {meta.initials}
+            <div className="user-avatar">
+              {role === "admin"
+                ? "A"
+                : role === "commander"
+                ? "C"
+                : "F"}
             </div>
           </div>
         </header>
 
         {message && (
-          <div className="ss-toast">
+          <div className="toast-message">
             ✓ {message}
           </div>
         )}
 
-        {activePage === "Overview" && (
-          <Overview
-            role={role}
-            inventory={inventory}
-            routes={routes}
-            alerts={alerts}
-            bases={bases}
-            totalInventory={totalInventory}
-            activeRoutes={activeRoutes}
-            openAlerts={openAlerts}
-            averageReadiness={averageReadiness}
-            onNavigate={setActivePage}
-          />
-        )}
-
-        {activePage === "Inventory" && (
-          <InventoryPage
-            inventory={filteredInventory}
-            search={search}
-            setSearch={setSearch}
-            isAdmin={role === "admin"}
-            onAdd={() => {
-              setEditingInventory(null);
-              setModal("inventory");
-            }}
-            onEdit={(item) => {
-              setEditingInventory(item);
-              setModal("inventory");
-            }}
-            onDelete={deleteInventory}
-          />
-        )}
-
-        {activePage === "Routes" && (
-          <RoutesPage
-            routes={routes}
-            isAdmin={role === "admin"}
-            onAdd={() => {
-              setEditingRoute(null);
-              setModal("route");
-            }}
-            onEdit={(route) => {
-              setEditingRoute(route);
-              setModal("route");
-            }}
-            onDelete={deleteRoute}
-          />
-        )}
-
-        {activePage === "Risk Alerts" && (
-          <AlertsPage
-            alerts={alerts}
-            isAdmin={role === "admin"}
-            onResolve={resolveAlert}
-            onAdd={() => setModal("alert")}
-          />
-        )}
-
-        {activePage === "Analytics" && (
-          <AnalyticsPage
-            inventory={inventory}
-            routes={routes}
-            bases={bases}
-          />
-        )}
-
-        {activePage === "Forecast" && (
-          <ForecastPage />
-        )}
-
-        {activePage === "Scenarios" && (
-          <ScenarioPage
-            onRun={() => setModal("scenario")}
-          />
-        )}
-
-        {activePage === "Reports" && (
-          <ReportsPage
-            inventory={inventory}
-            routes={routes}
-            alerts={alerts}
-            bases={bases}
-          />
-        )}
-
-        {activePage === "Supply Chain" && (
-          <SupplyChainPage
-            inventory={inventory}
-            routes={routes}
-            bases={bases}
-          />
-        )}
-
-        {activePage === "Manage System" &&
-          role === "admin" && (
-            <ManageSystem
+        <div className="page-content">
+          {activePage === "overview" && (
+            <Overview
               inventory={inventory}
               routes={routes}
               alerts={alerts}
-              bases={bases}
-              onInventory={() => {
-                setEditingInventory(null);
-                setModal("inventory");
-              }}
-              onRoute={() => {
-                setEditingRoute(null);
-                setModal("route");
-              }}
-              onAlert={() => setModal("alert")}
-              onBase={() => setModal("base")}
+              role={role}
               onNavigate={setActivePage}
             />
           )}
 
-        {activePage === "User Management" &&
-          role === "admin" && (
+          {activePage === "supply" && (
+            <SupplyChain
+              inventory={inventory}
+              routes={routes}
+              alerts={alerts}
+            />
+          )}
+
+          {activePage === "inventory" && (
+            <InventoryPage
+              inventory={inventory}
+              onRefresh={() => {
+                setInventory([...inventory]);
+                showMessage("Inventory refreshed.");
+              }}
+            />
+          )}
+
+          {activePage === "routes" && (
+            <RoutesPage routes={routes} />
+          )}
+
+          {activePage === "alerts" && (
+            <AlertsPage
+              alerts={alerts}
+              onResolve={resolveAlert}
+            />
+          )}
+
+          {activePage === "analytics" && (
+            <AnalyticsPage
+              inventory={inventory}
+              routes={routes}
+              alerts={alerts}
+            />
+          )}
+
+          {activePage === "forecast" && (
+            <ForecastPage />
+          )}
+
+          {activePage === "scenarios" && (
+            <ScenarioPage showMessage={showMessage} />
+          )}
+
+          {activePage === "reports" && (
+            <ReportsPage showMessage={showMessage} />
+          )}
+
+          {activePage === "manage" && role === "admin" && (
+            <ManageSystem
+              inventory={inventory}
+              routes={routes}
+              alerts={alerts}
+              criticalInventory={criticalInventory}
+              delayedRoutes={delayedRoutes}
+              onReset={() => {
+                setInventory(initialInventory);
+                setRoutes(initialRoutes);
+                setAlerts(initialAlerts);
+                showMessage("Synthetic system data reset.");
+              }}
+            />
+          )}
+
+          {activePage === "users" && role === "admin" && (
             <UserManagement
               users={users}
-              onAdd={() => setModal("user")}
               onToggle={toggleUser}
+              showMessage={showMessage}
             />
           )}
 
-        {activePage === "Supply Requests" &&
-          role === "captain" && (
-            <SupplyRequests
-              onMessage={showMessage}
-            />
+          {activePage === "requests" && role === "captain" && (
+            <SupplyRequests showMessage={showMessage} />
           )}
+        </div>
       </section>
-
-      {modal === "inventory" && (
-        <InventoryModal
-          item={editingInventory}
-          onClose={() => setModal(null)}
-          onSave={(item) => {
-            if (editingInventory) {
-              setInventory((items) =>
-                items.map((x) =>
-                  x.id === item.id ? item : x
-                )
-              );
-              showMessage("Inventory updated");
-            } else {
-              setInventory((items) => [
-                ...items,
-                {
-                  ...item,
-                  id: Date.now(),
-                },
-              ]);
-              showMessage("Inventory added");
-            }
-
-            setModal(null);
-          }}
-        />
-      )}
-
-      {modal === "route" && (
-        <RouteModal
-          route={editingRoute}
-          onClose={() => setModal(null)}
-          onSave={(route) => {
-            if (editingRoute) {
-              setRoutes((items) =>
-                items.map((x) =>
-                  x.id === route.id ? route : x
-                )
-              );
-              showMessage("Route updated");
-            } else {
-              setRoutes((items) => [
-                ...items,
-                {
-                  ...route,
-                  id: Date.now(),
-                },
-              ]);
-              showMessage("Route added");
-            }
-
-            setModal(null);
-          }}
-        />
-      )}
-
-      {modal === "alert" && (
-        <AlertModal
-          onClose={() => setModal(null)}
-          onSave={(alert) => {
-            setAlerts((items) => [
-              ...items,
-              {
-                ...alert,
-                id: Date.now(),
-              },
-            ]);
-
-            setModal(null);
-            showMessage("Risk alert created");
-          }}
-        />
-      )}
-
-      {modal === "base" && (
-        <BaseModal
-          onClose={() => setModal(null)}
-          onSave={(base) => {
-            setBases((items) => [
-              ...items,
-              {
-                ...base,
-                id: Date.now(),
-              },
-            ]);
-
-            setModal(null);
-            showMessage("Base added");
-          }}
-        />
-      )}
-
-      {modal === "user" && (
-        <UserModal
-          onClose={() => setModal(null)}
-          onSave={(user) => {
-            setUsers((items) => [
-              ...items,
-              {
-                ...user,
-                id: Date.now(),
-              },
-            ]);
-
-            setModal(null);
-            showMessage("User added");
-          }}
-        />
-      )}
-
-      {modal === "scenario" && (
-        <ScenarioResult
-          onClose={() => setModal(null)}
-        />
-      )}
     </main>
   );
 }
 
 function NavButton({
-  label,
   active,
-  onClick,
+  label,
   icon,
-  count,
+  onClick,
+  badge,
 }: {
-  label: string;
   active: boolean;
-  onClick: () => void;
+  label: string;
   icon: string;
-  count?: number;
+  onClick: () => void;
+  badge?: number;
 }) {
   return (
     <button
-      className={`ss-nav-btn ${active ? "active" : ""}`}
+      className={`nav-button ${active ? "active" : ""}`}
       onClick={onClick}
     >
-      <span className="ss-nav-icon">{icon}</span>
+      <span className="nav-icon">{icon}</span>
+
       <span>{label}</span>
 
-      {count !== undefined && count > 0 && (
-        <b>{count}</b>
+      {badge !== undefined && badge > 0 && (
+        <span className="nav-badge">{badge}</span>
       )}
     </button>
   );
 }
 
 function Overview({
-  role,
   inventory,
   routes,
   alerts,
-  bases,
-  totalInventory,
-  activeRoutes,
-  openAlerts,
-  averageReadiness,
+  role,
   onNavigate,
 }: {
-  role: Role;
   inventory: InventoryItem[];
   routes: RouteItem[];
   alerts: AlertItem[];
-  bases: BaseItem[];
-  totalInventory: number;
-  activeRoutes: number;
-  openAlerts: number;
-  averageReadiness: number;
+  role: Role;
   onNavigate: (page: string) => void;
 }) {
+  const activeAlerts = alerts.filter(
+    (a) => !a.resolved
+  );
+
+  const critical = inventory.filter(
+    (i) => i.status === "Critical"
+  );
+
   return (
-    <div className="ss-page">
-      <div className="ss-kpi-grid">
+    <>
+      <div className="kpi-grid">
         <KPI
-          title="Total Inventory"
-          value={totalInventory.toLocaleString()}
-          unit="units"
+          label="Active Operations"
+          value="24"
           change="+8.4%"
+          positive
+          icon="◉"
+        />
+
+        <KPI
+          label="Inventory Health"
+          value="87%"
+          change="+4.2%"
+          positive
           icon="▣"
         />
 
         <KPI
-          title="Active Routes"
-          value={String(activeRoutes)}
-          unit={`/ ${routes.length}`}
-          change="+12%"
-          icon="⇄"
+          label="Active Routes"
+          value={String(
+            routes.filter((r) => r.status === "Active").length
+          )}
+          change="+2"
+          positive
+          icon="⌁"
         />
 
         <KPI
-          title="Open Risk Alerts"
-          value={String(openAlerts)}
-          unit="alerts"
-          change="-14%"
-          icon="⚠"
-          danger
-        />
-
-        <KPI
-          title="Operational Readiness"
-          value={`${averageReadiness}%`}
-          unit=""
-          change="+5.2%"
-          icon="◉"
+          label="Risk Alerts"
+          value={String(activeAlerts.length)}
+          change={critical.length > 0 ? "Action needed" : "Stable"}
+          positive={critical.length === 0}
+          icon="!"
         />
       </div>
 
-      <div className="ss-main-grid">
+      <div className="dashboard-grid two-column">
         <Panel
-          title="Synthetic Logistics Map"
-          subtitle="Demo operational network"
-          action={
-            <button
-              className="ss-small-btn"
-              onClick={() => onNavigate("Routes")}
-            >
-              View Routes
-            </button>
-          }
+          title="Operational Network"
+          subtitle="Current synthetic network status"
         >
-          <div className="ss-map">
-            <div className="ss-map-grid" />
+          <div className="network-map">
+            <div className="map-grid" />
 
-            {bases.map((base, index) => (
-              <div
-                className={`ss-map-base base-${index}`}
-                key={base.id}
-              >
-                <span />
-                <strong>{base.name}</strong>
-                <small>{base.readiness}% ready</small>
-              </div>
-            ))}
+            <div className="map-node node-a">
+              <span />
+              Base Alpha
+            </div>
 
-            <div className="ss-map-route route-1" />
-            <div className="ss-map-route route-2" />
-            <div className="ss-map-route route-3" />
+            <div className="map-node node-b">
+              <span />
+              Base Bravo
+            </div>
+
+            <div className="map-node node-c">
+              <span />
+              Base Charlie
+            </div>
+
+            <div className="map-node node-d">
+              <span />
+              Central Depot
+            </div>
+
+            <div className="route-line line-1" />
+            <div className="route-line line-2" />
+            <div className="route-line line-3" />
           </div>
+
+          <button
+            className="secondary-button"
+            onClick={() => onNavigate("routes")}
+          >
+            Open Route Intelligence →
+          </button>
         </Panel>
 
         <Panel
-          title="AI Risk Alerts"
-          subtitle="Synthetic intelligence alerts"
-          action={
-            <button
-              className="ss-small-btn"
-              onClick={() => onNavigate("Risk Alerts")}
-            >
-              View All
-            </button>
-          }
+          title="Priority Alerts"
+          subtitle="Issues requiring attention"
         >
-          <div className="ss-alert-list">
-            {alerts.slice(0, 4).map((alert) => (
-              <div
-                className="ss-alert-row"
-                key={alert.id}
-              >
+          <div className="alert-list">
+            {activeAlerts.slice(0, 4).map((alert) => (
+              <div className="alert-row" key={alert.id}>
                 <div
-                  className={`ss-severity ${alert.severity.toLowerCase()}`}
-                >
-                  !
-                </div>
-
-                <div className="ss-alert-info">
-                  <strong>{alert.title}</strong>
-                  <span>{alert.location}</span>
-                </div>
-
-                <em>{alert.status}</em>
-              </div>
-            ))}
-          </div>
-        </Panel>
-      </div>
-
-      <div className="ss-main-grid">
-        <Panel
-          title="AI Demand Forecast"
-          subtitle="Next 7 days • Synthetic prediction"
-          action={
-            <button
-              className="ss-small-btn"
-              onClick={() => onNavigate("Forecast")}
-            >
-              Details
-            </button>
-          }
-        >
-          <div className="ss-chart">
-            {forecastData.map((item) => (
-              <div className="ss-bar-wrap" key={item.day}>
-                <div
-                  className="ss-bar"
-                  style={{
-                    height: `${item.demand / 7}px`,
-                  }}
+                  className={`severity-dot ${alert.severity.toLowerCase()}`}
                 />
-                <small>{item.day.replace("Day ", "D")}</small>
+
+                <div className="alert-content">
+                  <strong>{alert.title}</strong>
+                  <span>
+                    {alert.location} · {alert.time}
+                  </span>
+                </div>
+
+                <span
+                  className={`status-pill ${alert.severity.toLowerCase()}`}
+                >
+                  {alert.severity}
+                </span>
               </div>
             ))}
           </div>
+
+          <button
+            className="secondary-button"
+            onClick={() => onNavigate("alerts")}
+          >
+            View All Alerts →
+          </button>
+        </Panel>
+      </div>
+
+      <div className="dashboard-grid two-column">
+        <Panel
+          title="7-Day Logistics Trend"
+          subtitle="Synthetic shipment performance"
+        >
+          <TrendChart />
         </Panel>
 
         <Panel
-          title="Operational Readiness"
-          subtitle={`${roleMeta[role].badge} view`}
+          title="Inventory Readiness"
+          subtitle="Current stock availability"
         >
-          <div className="ss-readiness-list">
-            {bases.map((base) => (
-              <div key={base.id}>
-                <div className="ss-progress-head">
-                  <span>{base.name}</span>
-                  <strong>{base.readiness}%</strong>
-                </div>
+          <div className="readiness-list">
+            {inventory.slice(0, 5).map((item) => {
+              const percentage = Math.min(
+                100,
+                Math.round((item.stock / item.min) * 100)
+              );
 
-                <div className="ss-progress">
-                  <span
-                    style={{
-                      width: `${base.readiness}%`,
-                    }}
-                  />
+              return (
+                <div className="readiness-item" key={item.id}>
+                  <div className="readiness-header">
+                    <span>{item.item}</span>
+                    <strong>{percentage}%</strong>
+                  </div>
+
+                  <div className="progress">
+                    <div
+                      className={`progress-bar ${item.status.toLowerCase()}`}
+                      style={{
+                        width: `${Math.min(
+                          100,
+                          percentage
+                        )}%`,
+                      }}
+                    />
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
+
+          <button
+            className="secondary-button"
+            onClick={() => onNavigate("inventory")}
+          >
+            Open Inventory →
+          </button>
         </Panel>
       </div>
 
-      <div className="ss-info-banner">
-        <strong>Demo Mode</strong>
-        <span>
-          All information shown in this dashboard is
-          synthetic demo data for prototype/SIH
-          presentation purposes.
-        </span>
-      </div>
-    </div>
+      <Panel
+        title={`${roleMeta[role].title} Quick Actions`}
+        subtitle="Frequently used operational controls"
+      >
+        <div className="quick-actions">
+          <button
+            onClick={() => onNavigate("inventory")}
+          >
+            <span>▣</span>
+            Check Inventory
+          </button>
+
+          <button
+            onClick={() => onNavigate("routes")}
+          >
+            <span>⌁</span>
+            Monitor Routes
+          </button>
+
+          <button
+            onClick={() => onNavigate("forecast")}
+          >
+            <span>◒</span>
+            Demand Forecast
+          </button>
+
+          <button
+            onClick={() => onNavigate("reports")}
+          >
+            <span>▤</span>
+            Generate Report
+          </button>
+        </div>
+      </Panel>
+    </>
   );
 }
 
 function KPI({
-  title,
+  label,
   value,
-  unit,
   change,
+  positive,
   icon,
-  danger,
 }: {
-  title: string;
+  label: string;
   value: string;
-  unit: string;
   change: string;
+  positive: boolean;
   icon: string;
-  danger?: boolean;
 }) {
   return (
-    <div className="ss-kpi">
-      <div className="ss-kpi-top">
-        <span>{title}</span>
-        <div className={`ss-kpi-icon ${danger ? "danger" : ""}`}>
-          {icon}
-        </div>
+    <div className="kpi-card">
+      <div className="kpi-top">
+        <span>{label}</span>
+        <div className="kpi-icon">{icon}</div>
       </div>
 
-      <div className="ss-kpi-value">
-        {value}
-        <small>{unit}</small>
-      </div>
+      <strong>{value}</strong>
 
-      <div className="ss-kpi-change">
-        {change} <span>vs previous period</span>
+      <div
+        className={`kpi-change ${
+          positive ? "positive" : "negative"
+        }`}
+      >
+        {positive ? "↑" : "↓"} {change}
       </div>
     </div>
   );
@@ -1098,631 +900,1097 @@ function KPI({
 function Panel({
   title,
   subtitle,
-  action,
   children,
 }: {
   title: string;
   subtitle?: string;
-  action?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
-    <section className="ss-panel">
-      <div className="ss-panel-head">
+    <section className="dashboard-panel">
+      <div className="panel-header">
         <div>
-          <h3>{title}</h3>
+          <h2>{title}</h2>
           {subtitle && <p>{subtitle}</p>}
         </div>
-
-        {action}
       </div>
 
-      {children}
+      <div className="panel-body">{children}</div>
     </section>
+  );
+}
+
+function SupplyChain({
+  inventory,
+  routes,
+  alerts,
+}: {
+  inventory: InventoryItem[];
+  routes: RouteItem[];
+  alerts: AlertItem[];
+}) {
+  const healthyInventory = inventory.filter(
+    (i) => i.status === "Healthy"
+  ).length;
+
+  const activeRoutes = routes.filter(
+    (r) => r.status === "Active"
+  ).length;
+
+  const unresolvedAlerts = alerts.filter(
+    (a) => !a.resolved
+  ).length;
+
+  return (
+    <>
+      <div className="kpi-grid">
+        <KPI
+          label="Supply Availability"
+          value="91%"
+          change="+5.1%"
+          positive
+          icon="◉"
+        />
+
+        <KPI
+          label="Healthy Inventory"
+          value={`${healthyInventory}/${inventory.length}`}
+          change="+2 items"
+          positive
+          icon="▣"
+        />
+
+        <KPI
+          label="Active Shipments"
+          value="18"
+          change="+12%"
+          positive
+          icon="⇄"
+        />
+
+        <KPI
+          label="Network Risks"
+          value={String(unresolvedAlerts)}
+          change="Monitor"
+          positive={unresolvedAlerts < 3}
+          icon="!"
+        />
+      </div>
+
+      <Panel
+        title="End-to-End Supply Flow"
+        subtitle="Synthetic movement of supplies"
+      >
+        <div className="supply-flow">
+          <FlowStep
+            number="01"
+            title="Central Depot"
+            text="Stock received"
+            value="1,840 units"
+          />
+
+          <div className="flow-arrow">→</div>
+
+          <FlowStep
+            number="02"
+            title="Regional Hub"
+            text="Processing"
+            value="1,520 units"
+          />
+
+          <div className="flow-arrow">→</div>
+
+          <FlowStep
+            number="03"
+            title="Field Bases"
+            text="Distributed"
+            value="1,240 units"
+          />
+
+          <div className="flow-arrow">→</div>
+
+          <FlowStep
+            number="04"
+            title="Field Units"
+            text="Consumed"
+            value="920 units"
+          />
+        </div>
+      </Panel>
+
+      <div className="dashboard-grid two-column">
+        <Panel
+          title="Supply Performance"
+          subtitle="Category-wise status"
+        >
+          <div className="metric-list">
+            <MetricRow
+              label="Food"
+              value="94%"
+              percentage={94}
+            />
+            <MetricRow
+              label="Medical"
+              value="71%"
+              percentage={71}
+            />
+            <MetricRow
+              label="Fuel"
+              value="62%"
+              percentage={62}
+            />
+            <MetricRow
+              label="Water"
+              value="98%"
+              percentage={98}
+            />
+            <MetricRow
+              label="Relief"
+              value="79%"
+              percentage={79}
+            />
+          </div>
+        </Panel>
+
+        <Panel
+          title="Logistics Pipeline"
+          subtitle={`${activeRoutes} routes currently active`}
+        >
+          <div className="pipeline">
+            <PipelineItem
+              title="Orders Received"
+              value="42"
+              status="Complete"
+            />
+            <PipelineItem
+              title="Orders Processing"
+              value="17"
+              status="Active"
+            />
+            <PipelineItem
+              title="In Transit"
+              value="12"
+              status="Active"
+            />
+            <PipelineItem
+              title="Delivered Today"
+              value="28"
+              status="Complete"
+            />
+          </div>
+        </Panel>
+      </div>
+    </>
+  );
+}
+
+function FlowStep({
+  number,
+  title,
+  text,
+  value,
+}: {
+  number: string;
+  title: string;
+  text: string;
+  value: string;
+}) {
+  return (
+    <div className="flow-step">
+      <span className="flow-number">{number}</span>
+      <strong>{title}</strong>
+      <span>{text}</span>
+      <b>{value}</b>
+    </div>
+  );
+}
+
+function PipelineItem({
+  title,
+  value,
+  status,
+}: {
+  title: string;
+  value: string;
+  status: string;
+}) {
+  return (
+    <div className="pipeline-item">
+      <div>
+        <strong>{title}</strong>
+        <span>{status}</span>
+      </div>
+
+      <b>{value}</b>
+    </div>
+  );
+}
+
+function MetricRow({
+  label,
+  value,
+  percentage,
+}: {
+  label: string;
+  value: string;
+  percentage: number;
+}) {
+  return (
+    <div className="metric-row">
+      <div className="metric-header">
+        <span>{label}</span>
+        <strong>{value}</strong>
+      </div>
+
+      <div className="progress">
+        <div
+          className="progress-bar"
+          style={{ width: `${percentage}%` }}
+        />
+      </div>
+    </div>
   );
 }
 
 function InventoryPage({
   inventory,
-  search,
-  setSearch,
-  isAdmin,
-  onAdd,
-  onEdit,
-  onDelete,
+  onRefresh,
 }: {
   inventory: InventoryItem[];
-  search: string;
-  setSearch: (value: string) => void;
-  isAdmin: boolean;
-  onAdd: () => void;
-  onEdit: (item: InventoryItem) => void;
-  onDelete: (id: number) => void;
+  onRefresh: () => void;
 }) {
+  const healthy = inventory.filter(
+    (i) => i.status === "Healthy"
+  ).length;
+
+  const low = inventory.filter(
+    (i) => i.status === "Low"
+  ).length;
+
+  const critical = inventory.filter(
+    (i) => i.status === "Critical"
+  ).length;
+
   return (
-    <div className="ss-page">
-      <div className="ss-page-title">
-        <div>
-          <h2>Inventory Management</h2>
-          <p>
-            Synthetic inventory data and stock monitoring.
-          </p>
-        </div>
+    <>
+      <div className="kpi-grid">
+        <KPI
+          label="Total Items"
+          value={String(inventory.length)}
+          change="Tracked"
+          positive
+          icon="▣"
+        />
 
-        {isAdmin && (
-          <button
-            className="ss-primary-btn"
-            onClick={onAdd}
-          >
-            + Add Inventory
-          </button>
-        )}
-      </div>
+        <KPI
+          label="Healthy"
+          value={String(healthy)}
+          change="Stable"
+          positive
+          icon="✓"
+        />
 
-      <div className="ss-toolbar">
-        <input
-          className="ss-input"
-          placeholder="Search inventory..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+        <KPI
+          label="Low Stock"
+          value={String(low)}
+          change="Replenish"
+          positive={false}
+          icon="!"
+        />
+
+        <KPI
+          label="Critical"
+          value={String(critical)}
+          change="Immediate action"
+          positive={false}
+          icon="⚠"
         />
       </div>
 
-      <div className="ss-table-wrap">
-        <table className="ss-table">
-          <thead>
-            <tr>
-              <th>Item</th>
-              <th>Category</th>
-              <th>Quantity</th>
-              <th>Minimum</th>
-              <th>Location</th>
-              <th>Status</th>
-              {isAdmin && <th>Actions</th>}
-            </tr>
-          </thead>
+      <Panel
+        title="Inventory Control Center"
+        subtitle="Synthetic inventory dataset"
+      >
+        <div className="table-toolbar">
+          <span>{inventory.length} tracked items</span>
 
-          <tbody>
-            {inventory.map((item) => {
-              const low = item.quantity < item.minStock;
+          <button
+            className="secondary-button compact"
+            onClick={onRefresh}
+          >
+            ↻ Refresh
+          </button>
+        </div>
 
-              return (
+        <div className="data-table-wrap">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Category</th>
+                <th>Stock</th>
+                <th>Minimum</th>
+                <th>Location</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {inventory.map((item) => (
                 <tr key={item.id}>
                   <td>
-                    <strong>{item.name}</strong>
+                    <strong>{item.item}</strong>
                   </td>
                   <td>{item.category}</td>
-                  <td>
-                    {item.quantity.toLocaleString()} {item.unit}
-                  </td>
-                  <td>
-                    {item.minStock.toLocaleString()} {item.unit}
-                  </td>
+                  <td>{item.stock}</td>
+                  <td>{item.min}</td>
                   <td>{item.location}</td>
                   <td>
                     <span
-                      className={`ss-status ${
-                        low ? "danger" : "success"
-                      }`}
+                      className={`status-pill ${item.status.toLowerCase()}`}
                     >
-                      {low ? "LOW STOCK" : "HEALTHY"}
+                      {item.status}
                     </span>
                   </td>
-
-                  {isAdmin && (
-                    <td>
-                      <button
-                        className="ss-action-btn"
-                        onClick={() => onEdit(item)}
-                      >
-                        Edit
-                      </button>
-
-                      <button
-                        className="ss-action-btn danger-text"
-                        onClick={() => onDelete(item.id)}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  )}
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-    </div>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Panel>
+    </>
   );
 }
 
 function RoutesPage({
   routes,
-  isAdmin,
-  onAdd,
-  onEdit,
-  onDelete,
 }: {
   routes: RouteItem[];
-  isAdmin: boolean;
-  onAdd: () => void;
-  onEdit: (route: RouteItem) => void;
-  onDelete: (id: number) => void;
 }) {
+  const active = routes.filter(
+    (r) => r.status === "Active"
+  ).length;
+
+  const delayed = routes.filter(
+    (r) => r.status === "Delayed"
+  ).length;
+
+  const blocked = routes.filter(
+    (r) => r.status === "Blocked"
+  ).length;
+
   return (
-    <div className="ss-page">
-      <div className="ss-page-title">
-        <div>
-          <h2>Logistics Routes</h2>
-          <p>Monitor synthetic supply movement.</p>
-        </div>
+    <>
+      <div className="kpi-grid">
+        <KPI
+          label="Total Routes"
+          value={String(routes.length)}
+          change="Monitored"
+          positive
+          icon="⌁"
+        />
 
-        {isAdmin && (
-          <button
-            className="ss-primary-btn"
-            onClick={onAdd}
-          >
-            + Add Route
-          </button>
-        )}
+        <KPI
+          label="Active"
+          value={String(active)}
+          change="Running"
+          positive
+          icon="✓"
+        />
+
+        <KPI
+          label="Delayed"
+          value={String(delayed)}
+          change="Attention"
+          positive={false}
+          icon="!"
+        />
+
+        <KPI
+          label="Blocked"
+          value={String(blocked)}
+          change="Critical"
+          positive={false}
+          icon="⚠"
+        />
       </div>
 
-      <div className="ss-route-grid">
-        {routes.map((route) => (
-          <div className="ss-route-card" key={route.id}>
-            <div className="ss-route-top">
-              <strong>{route.name}</strong>
+      <div className="dashboard-grid two-column">
+        <Panel
+          title="Route Network"
+          subtitle="Synthetic logistics map"
+        >
+          <div className="network-map large-map">
+            <div className="map-grid" />
 
-              <span
-                className={`ss-status ${route.status
-                  .toLowerCase()
-                  .replace(" ", "-")}`}
-              >
-                {route.status}
-              </span>
+            <div className="map-node node-a">
+              <span />
+              Central Depot
             </div>
 
-            <div className="ss-route-path">
-              <span>{route.from}</span>
-              <b>→</b>
-              <span>{route.to}</span>
+            <div className="map-node node-b">
+              <span />
+              Base Alpha
             </div>
 
-            <div className="ss-route-bottom">
-              <span>ETA</span>
-              <strong>{route.eta}</strong>
+            <div className="map-node node-c">
+              <span />
+              Base Bravo
             </div>
 
-            {isAdmin && (
-              <div className="ss-route-actions">
-                <button
-                  className="ss-action-btn"
-                  onClick={() => onEdit(route)}
-                >
-                  Edit
-                </button>
+            <div className="map-node node-d">
+              <span />
+              Base Charlie
+            </div>
 
-                <button
-                  className="ss-action-btn danger-text"
-                  onClick={() => onDelete(route.id)}
-                >
-                  Delete
-                </button>
-              </div>
-            )}
+            <div className="route-line line-1" />
+            <div className="route-line line-2" />
+            <div className="route-line line-3" />
           </div>
-        ))}
+        </Panel>
+
+        <Panel
+          title="Route Risk"
+          subtitle="Current transportation conditions"
+        >
+          <div className="route-list">
+            {routes.map((route) => (
+              <div className="route-card" key={route.id}>
+                <div>
+                  <strong>{route.name}</strong>
+                  <span>
+                    {route.origin} → {route.destination}
+                  </span>
+                </div>
+
+                <div className="route-meta">
+                  <span>{route.distance}</span>
+                  <span>{route.eta}</span>
+
+                  <span
+                    className={`status-pill ${route.risk.toLowerCase()}`}
+                  >
+                    {route.risk}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Panel>
       </div>
-    </div>
+    </>
   );
 }
 
 function AlertsPage({
   alerts,
-  isAdmin,
   onResolve,
-  onAdd,
 }: {
   alerts: AlertItem[];
-  isAdmin: boolean;
   onResolve: (id: number) => void;
-  onAdd: () => void;
 }) {
+  const critical = alerts.filter(
+    (a) => a.severity === "Critical" && !a.resolved
+  ).length;
+
+  const high = alerts.filter(
+    (a) => a.severity === "High" && !a.resolved
+  ).length;
+
+  const medium = alerts.filter(
+    (a) => a.severity === "Medium" && !a.resolved
+  ).length;
+
   return (
-    <div className="ss-page">
-      <div className="ss-page-title">
-        <div>
-          <h2>Risk Alerts</h2>
-          <p>AI-generated synthetic logistics alerts.</p>
-        </div>
+    <>
+      <div className="kpi-grid">
+        <KPI
+          label="Critical"
+          value={String(critical)}
+          change="Immediate"
+          positive={false}
+          icon="⚠"
+        />
 
-        {isAdmin && (
-          <button
-            className="ss-primary-btn"
-            onClick={onAdd}
-          >
-            + Create Alert
-          </button>
-        )}
+        <KPI
+          label="High"
+          value={String(high)}
+          change="Action required"
+          positive={false}
+          icon="!"
+        />
+
+        <KPI
+          label="Medium"
+          value={String(medium)}
+          change="Monitor"
+          positive={true}
+          icon="◐"
+        />
+
+        <KPI
+          label="Resolved"
+          value={String(
+            alerts.filter((a) => a.resolved).length
+          )}
+          change="Completed"
+          positive
+          icon="✓"
+        />
       </div>
 
-      <div className="ss-alert-page">
-        {alerts.map((alert) => (
-          <div className="ss-alert-card" key={alert.id}>
+      <Panel
+        title="Risk Alert Center"
+        subtitle="Prioritized synthetic incidents"
+      >
+        <div className="alert-list full-alert-list">
+          {alerts.map((alert) => (
             <div
-              className={`ss-severity ${alert.severity.toLowerCase()}`}
+              className={`alert-row ${
+                alert.resolved ? "resolved-row" : ""
+              }`}
+              key={alert.id}
             >
-              !
-            </div>
+              <div
+                className={`severity-dot ${alert.severity.toLowerCase()}`}
+              />
 
-            <div>
-              <strong>{alert.title}</strong>
-              <span>{alert.location}</span>
-            </div>
+              <div className="alert-content">
+                <strong>{alert.title}</strong>
 
-            <span
-              className={`ss-status ${alert.severity.toLowerCase()}`}
-            >
-              {alert.severity}
-            </span>
+                <span>{alert.description}</span>
 
-            <span className="ss-status">
-              {alert.status}
-            </span>
+                <small>
+                  {alert.location} · {alert.time}
+                </small>
+              </div>
 
-            {alert.status === "Open" && (
-              <button
-                className="ss-action-btn"
-                onClick={() => onResolve(alert.id)}
+              <span
+                className={`status-pill ${alert.severity.toLowerCase()}`}
               >
-                Resolve
-              </button>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
+                {alert.resolved
+                  ? "Resolved"
+                  : alert.severity}
+              </span>
+
+              {!alert.resolved && (
+                <button
+                  className="secondary-button compact"
+                  onClick={() => onResolve(alert.id)}
+                >
+                  Resolve
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      </Panel>
+    </>
   );
 }
 
 function AnalyticsPage({
   inventory,
   routes,
-  bases,
+  alerts,
 }: {
   inventory: InventoryItem[];
   routes: RouteItem[];
-  bases: BaseItem[];
+  alerts: AlertItem[];
 }) {
-  const maxStock = Math.max(
-    ...inventory.map((item) => item.quantity)
+  const deliveryScore = 92;
+  const inventoryScore = Math.round(
+    (inventory.filter((i) => i.status === "Healthy").length /
+      inventory.length) *
+      100
+  );
+
+  const routeScore = Math.round(
+    (routes.filter((r) => r.status === "Active").length /
+      routes.length) *
+      100
+  );
+
+  const alertScore = Math.max(
+    0,
+    100 -
+      alerts.filter((a) => !a.resolved).length * 10
   );
 
   return (
-    <div className="ss-page">
-      <div className="ss-page-title">
-        <div>
-          <h2>Analytics</h2>
-          <p>Synthetic operational analytics.</p>
-        </div>
+    <>
+      <div className="kpi-grid">
+        <KPI
+          label="Operational Score"
+          value="89"
+          change="+6.8%"
+          positive
+          icon="◫"
+        />
+
+        <KPI
+          label="Delivery Efficiency"
+          value={`${deliveryScore}%`}
+          change="+4.1%"
+          positive
+          icon="⇄"
+        />
+
+        <KPI
+          label="Inventory Score"
+          value={`${inventoryScore}%`}
+          change="+3.5%"
+          positive
+          icon="▣"
+        />
+
+        <KPI
+          label="Route Reliability"
+          value={`${routeScore}%`}
+          change="+2.9%"
+          positive
+          icon="⌁"
+        />
       </div>
 
-      <div className="ss-main-grid">
+      <div className="dashboard-grid two-column">
         <Panel
-          title="Inventory Distribution"
-          subtitle="Current synthetic stock"
+          title="Performance Analytics"
+          subtitle="Seven-day operational performance"
         >
-          <div className="ss-horizontal-bars">
-            {inventory.map((item) => (
-              <div key={item.id}>
-                <div className="ss-progress-head">
-                  <span>{item.name}</span>
-                  <strong>{item.quantity}</strong>
-                </div>
-
-                <div className="ss-progress">
-                  <span
-                    style={{
-                      width: `${
-                        (item.quantity / maxStock) * 100
-                      }%`,
-                    }}
+          <div className="bar-chart">
+            {[72, 78, 74, 84, 82, 91, 89].map(
+              (value, index) => (
+                <div className="bar-column" key={index}>
+                  <div
+                    className="bar"
+                    style={{ height: `${value}%` }}
                   />
+
+                  <span>
+                    {["M", "T", "W", "T", "F", "S", "S"][
+                      index
+                    ]}
+                  </span>
                 </div>
-              </div>
-            ))}
+              )
+            )}
           </div>
         </Panel>
 
         <Panel
-          title="Base Readiness"
-          subtitle="Synthetic readiness score"
+          title="KPI Breakdown"
+          subtitle="Current operational health"
         >
-          <div className="ss-horizontal-bars">
-            {bases.map((base) => (
-              <div key={base.id}>
-                <div className="ss-progress-head">
-                  <span>{base.name}</span>
-                  <strong>{base.readiness}%</strong>
-                </div>
+          <MetricRow
+            label="Delivery Efficiency"
+            value="92%"
+            percentage={92}
+          />
 
-                <div className="ss-progress">
-                  <span
-                    style={{
-                      width: `${base.readiness}%`,
-                    }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
+          <MetricRow
+            label="Inventory Readiness"
+            value={`${inventoryScore}%`}
+            percentage={inventoryScore}
+          />
+
+          <MetricRow
+            label="Route Reliability"
+            value={`${routeScore}%`}
+            percentage={routeScore}
+          />
+
+          <MetricRow
+            label="Alert Resolution"
+            value={`${alertScore}%`}
+            percentage={alertScore}
+          />
         </Panel>
       </div>
 
-      <div className="ss-stat-grid">
-        <div className="ss-stat">
-          <strong>{routes.length}</strong>
-          <span>Total Routes</span>
-        </div>
+      <Panel
+        title="AI Insights"
+        subtitle="Synthetic intelligence-generated observations"
+      >
+        <div className="insight-grid">
+          <Insight
+            icon="↗"
+            title="Delivery improving"
+            text="Average delivery efficiency increased over the last seven days."
+          />
 
-        <div className="ss-stat">
-          <strong>
-            {routes.filter((r) => r.status === "Delayed").length}
-          </strong>
-          <span>Delayed Routes</span>
-        </div>
+          <Insight
+            icon="!"
+            title="Fuel requires attention"
+            text="Fuel inventory is below the preferred operational threshold."
+          />
 
-        <div className="ss-stat">
-          <strong>{inventory.length}</strong>
-          <span>Inventory Items</span>
+          <Insight
+            icon="⌁"
+            title="Route Bravo risk"
+            text="Weather and congestion may increase travel time."
+          />
         </div>
+      </Panel>
+    </>
+  );
+}
 
-        <div className="ss-stat">
-          <strong>{bases.length}</strong>
-          <span>Active Bases</span>
-        </div>
+function Insight({
+  icon,
+  title,
+  text,
+}: {
+  icon: string;
+  title: string;
+  text: string;
+}) {
+  return (
+    <div className="insight-card">
+      <div className="insight-icon">{icon}</div>
+
+      <div>
+        <strong>{title}</strong>
+        <p>{text}</p>
       </div>
     </div>
   );
 }
 
 function ForecastPage() {
-  const max = Math.max(
-    ...forecastData.map((item) => item.demand)
-  );
+  const forecast = [
+    { item: "Rice", current: 820, predicted: 620, confidence: 94 },
+    { item: "Medical Kits", current: 140, predicted: 240, confidence: 91 },
+    { item: "Diesel", current: 92, predicted: 210, confidence: 96 },
+    { item: "Water", current: 670, predicted: 540, confidence: 89 },
+    { item: "Blankets", current: 180, predicted: 360, confidence: 86 },
+  ];
 
   return (
-    <div className="ss-page">
-      <div className="ss-page-title">
-        <div>
-          <h2>AI Demand Forecast</h2>
-          <p>
-            Synthetic 7-day demand prediction for prototype
-            demonstration.
-          </p>
-        </div>
+    <>
+      <div className="kpi-grid">
+        <KPI
+          label="Forecast Accuracy"
+          value="94.2%"
+          change="+2.8%"
+          positive
+          icon="◒"
+        />
+
+        <KPI
+          label="7-Day Demand"
+          value="4,820"
+          change="+11.4%"
+          positive
+          icon="↗"
+        />
+
+        <KPI
+          label="Replenishment"
+          value="8"
+          change="Items required"
+          positive={false}
+          icon="!"
+        />
+
+        <KPI
+          label="Confidence"
+          value="91%"
+          change="High"
+          positive
+          icon="✓"
+        />
       </div>
 
-      <div className="ss-panel">
-        <div className="ss-panel-head">
-          <div>
-            <h3>Predicted Demand</h3>
-            <p>Units required per day</p>
-          </div>
+      <Panel
+        title="Demand Forecast"
+        subtitle="Synthetic AI-style predictions"
+      >
+        <div className="forecast-list">
+          {forecast.map((item) => (
+            <div className="forecast-row" key={item.item}>
+              <div className="forecast-name">
+                <strong>{item.item}</strong>
+                <span>
+                  Current {item.current} → Forecast{" "}
+                  {item.predicted}
+                </span>
+              </div>
 
-          <span className="ss-ai-badge">
-            AI PREDICTION
-          </span>
-        </div>
-
-        <div className="ss-big-chart">
-          {forecastData.map((item) => (
-            <div className="ss-forecast-column" key={item.day}>
-              <strong>{item.demand}</strong>
-
-              <div className="ss-forecast-track">
-                <span
+              <div className="forecast-bar">
+                <div
+                  className="forecast-current"
                   style={{
-                    height: `${(item.demand / max) * 100}%`,
+                    width: `${Math.min(
+                      100,
+                      (item.current / 900) * 100
+                    )}%`,
+                  }}
+                />
+
+                <div
+                  className="forecast-predicted"
+                  style={{
+                    width: `${Math.min(
+                      100,
+                      (item.predicted / 900) * 100
+                    )}%`,
                   }}
                 />
               </div>
 
-              <small>{item.day}</small>
+              <span className="confidence">
+                {item.confidence}%
+              </span>
             </div>
           ))}
         </div>
-      </div>
-    </div>
+      </Panel>
+
+      <Panel
+        title="Forecast Recommendation"
+        subtitle="Suggested operational action"
+      >
+        <div className="recommendation">
+          <div className="recommendation-icon">AI</div>
+
+          <div>
+            <strong>
+              Increase fuel and medical stock before
+              next operational cycle.
+            </strong>
+
+            <p>
+              The synthetic demand model predicts a
+              significant increase in consumption.
+            </p>
+          </div>
+        </div>
+      </Panel>
+    </>
   );
 }
 
 function ScenarioPage({
-  onRun,
+  showMessage,
 }: {
-  onRun: () => void;
+  showMessage: (message: string) => void;
 }) {
-  return (
-    <div className="ss-page">
-      <div className="ss-page-title">
-        <div>
-          <h2>Scenario Simulation</h2>
-          <p>Run synthetic what-if logistics scenarios.</p>
-        </div>
+  const [result, setResult] = useState("");
 
-        <button
-          className="ss-primary-btn"
-          onClick={onRun}
+  const scenarios = [
+    {
+      id: 1,
+      title: "Fuel Shortage",
+      description:
+        "Simulate a 35% reduction in available fuel.",
+      impact: "High",
+      effect: "-18% route capacity",
+    },
+    {
+      id: 2,
+      title: "Heavy Rainfall",
+      description:
+        "Simulate major weather disruption.",
+      impact: "Medium",
+      effect: "+42 min average ETA",
+    },
+    {
+      id: 3,
+      title: "Demand Surge",
+      description:
+        "Simulate 40% increase in field demand.",
+      impact: "High",
+      effect: "+31% inventory consumption",
+    },
+  ];
+
+  function simulate(title: string) {
+    setResult(
+      `${title}: synthetic simulation completed.`
+    );
+
+    showMessage("Scenario simulation completed.");
+  }
+
+  return (
+    <>
+      <div className="kpi-grid">
+        <KPI
+          label="Scenarios Available"
+          value="12"
+          change="Synthetic"
+          positive
+          icon="◇"
+        />
+
+        <KPI
+          label="High Impact"
+          value="4"
+          change="Review"
+          positive={false}
+          icon="!"
+        />
+
+        <KPI
+          label="Simulations Today"
+          value="18"
+          change="+6"
+          positive
+          icon="↗"
+        />
+
+        <KPI
+          label="Preparedness"
+          value="86%"
+          change="+5%"
+          positive
+          icon="✓"
+        />
+      </div>
+
+      <div className="scenario-grid">
+        {scenarios.map((scenario) => (
+          <div className="scenario-card" key={scenario.id}>
+            <div className="scenario-icon">◇</div>
+
+            <span
+              className={`status-pill ${scenario.impact.toLowerCase()}`}
+            >
+              {scenario.impact} impact
+            </span>
+
+            <h3>{scenario.title}</h3>
+
+            <p>{scenario.description}</p>
+
+            <div className="scenario-effect">
+              <span>Expected effect</span>
+              <strong>{scenario.effect}</strong>
+            </div>
+
+            <button
+              className="primary-button"
+              onClick={() =>
+                simulate(scenario.title)
+              }
+            >
+              Run Simulation
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {result && (
+        <Panel
+          title="Simulation Result"
+          subtitle="Latest synthetic simulation"
         >
-          Run Simulation
-        </button>
-      </div>
-
-      <div className="ss-scenario-grid">
-        <ScenarioCard
-          title="Route Blockage"
-          description="Simulate closure of a critical supply route."
-          impact="High"
-        />
-
-        <ScenarioCard
-          title="Demand Spike"
-          description="Simulate sudden 25% increase in demand."
-          impact="Medium"
-        />
-
-        <ScenarioCard
-          title="Fuel Shortage"
-          description="Simulate reduction in fuel availability."
-          impact="Critical"
-        />
-      </div>
-    </div>
-  );
-}
-
-function ScenarioCard({
-  title,
-  description,
-  impact,
-}: {
-  title: string;
-  description: string;
-  impact: string;
-}) {
-  return (
-    <div className="ss-scenario-card">
-      <div className="ss-scenario-icon">◇</div>
-      <h3>{title}</h3>
-      <p>{description}</p>
-
-      <span className={`ss-status ${impact.toLowerCase()}`}>
-        {impact} Impact
-      </span>
-    </div>
+          <div className="simulation-result">
+            ✓ {result}
+          </div>
+        </Panel>
+      )}
+    </>
   );
 }
 
 function ReportsPage({
-  inventory,
-  routes,
-  alerts,
-  bases,
+  showMessage,
 }: {
-  inventory: InventoryItem[];
-  routes: RouteItem[];
-  alerts: AlertItem[];
-  bases: BaseItem[];
+  showMessage: (message: string) => void;
 }) {
-  function downloadReport() {
-    const report = `
-SUPPLYSHIELD AI
-SYNTHETIC LOGISTICS REPORT
---------------------------------
-
-Inventory Items: ${inventory.length}
-Routes: ${routes.length}
-Risk Alerts: ${alerts.length}
-Bases: ${bases.length}
-
-Generated for prototype demonstration.
-All information is synthetic demo data.
-`;
-
-    const blob = new Blob([report], {
-      type: "text/plain",
-    });
-
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "supplyshield-demo-report.txt";
-    a.click();
-
-    URL.revokeObjectURL(url);
-  }
+  const reports = [
+    {
+      title: "Daily Logistics Report",
+      type: "Operations",
+      date: "04 Oct 2026",
+    },
+    {
+      title: "Inventory Health Report",
+      type: "Inventory",
+      date: "04 Oct 2026",
+    },
+    {
+      title: "Route Risk Report",
+      type: "Transportation",
+      date: "03 Oct 2026",
+    },
+    {
+      title: "Weekly Command Summary",
+      type: "Executive",
+      date: "02 Oct 2026",
+    },
+  ];
 
   return (
-    <div className="ss-page">
-      <div className="ss-page-title">
-        <div>
-          <h2>Reports</h2>
-          <p>Generate synthetic logistics reports.</p>
-        </div>
-
-        <button
-          className="ss-primary-btn"
-          onClick={downloadReport}
-        >
-          ↓ Download Report
-        </button>
-      </div>
-
-      <div className="ss-stat-grid">
-        <div className="ss-stat">
-          <strong>{inventory.length}</strong>
-          <span>Inventory Records</span>
-        </div>
-
-        <div className="ss-stat">
-          <strong>{routes.length}</strong>
-          <span>Route Records</span>
-        </div>
-
-        <div className="ss-stat">
-          <strong>{alerts.length}</strong>
-          <span>Alert Records</span>
-        </div>
-
-        <div className="ss-stat">
-          <strong>{bases.length}</strong>
-          <span>Base Records</span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function SupplyChainPage({
-  inventory,
-  routes,
-  bases,
-}: {
-  inventory: InventoryItem[];
-  routes: RouteItem[];
-  bases: BaseItem[];
-}) {
-  return (
-    <div className="ss-page">
-      <div className="ss-page-title">
-        <div>
-          <h2>Supply Chain</h2>
-          <p>End-to-end synthetic logistics flow.</p>
-        </div>
-      </div>
-
-      <div className="ss-flow">
-        <FlowBox
-          title="Central Depot"
-          value={`${inventory.length} items`}
+    <>
+      <div className="kpi-grid">
+        <KPI
+          label="Reports Available"
+          value="24"
+          change="This month"
+          positive
+          icon="▤"
         />
 
-        <div className="ss-flow-arrow">→</div>
-
-        <FlowBox
-          title="Transport Network"
-          value={`${routes.length} routes`}
+        <KPI
+          label="Generated Today"
+          value="6"
+          change="+2"
+          positive
+          icon="↗"
         />
 
-        <div className="ss-flow-arrow">→</div>
+        <KPI
+          label="Scheduled"
+          value="4"
+          change="Upcoming"
+          positive
+          icon="◷"
+        />
 
-        <FlowBox
-          title="Forward Bases"
-          value={`${bases.length} bases`}
+        <KPI
+          label="Data Freshness"
+          value="98%"
+          change="Excellent"
+          positive
+          icon="✓"
         />
       </div>
-    </div>
+
+      <Panel
+        title="Operational Reports"
+        subtitle="Synthetic report center"
+      >
+        <div className="report-list">
+          {reports.map((report) => (
+            <div className="report-row" key={report.title}>
+              <div className="report-icon">▤</div>
+
+              <div className="report-info">
+                <strong>{report.title}</strong>
+
+                <span>
+                  {report.type} · {report.date}
+                </span>
+              </div>
+
+              <button
+                className="secondary-button compact"
+                onClick={() =>
+                  showMessage(
+                    `${report.title} generated successfully.`
+                  )
+                }
+              >
+                Generate
+              </button>
+            </div>
+          ))}
+        </div>
+      </Panel>
+    </>
   );
 }
 
@@ -1730,760 +1998,413 @@ function ManageSystem({
   inventory,
   routes,
   alerts,
-  bases,
-  onInventory,
-  onRoute,
-  onAlert,
-  onBase,
-  onNavigate,
+  criticalInventory,
+  delayedRoutes,
+  onReset,
 }: {
   inventory: InventoryItem[];
   routes: RouteItem[];
   alerts: AlertItem[];
-  bases: BaseItem[];
-  onInventory: () => void;
-  onRoute: () => void;
-  onAlert: () => void;
-  onBase: () => void;
-  onNavigate: (page: string) => void;
+  criticalInventory: number;
+  delayedRoutes: number;
+  onReset: () => void;
 }) {
   return (
-    <div className="ss-page">
-      <div className="ss-page-title">
-        <div>
-          <h2>Manage System</h2>
-          <p>
-            Admin-only controls for synthetic dashboard
-            data.
-          </p>
+    <>
+      <div className="kpi-grid">
+        <KPI
+          label="Tracked Inventory"
+          value={String(inventory.length)}
+          change="Items"
+          positive
+          icon="▣"
+        />
+
+        <KPI
+          label="Routes"
+          value={String(routes.length)}
+          change="Configured"
+          positive
+          icon="⌁"
+        />
+
+        <KPI
+          label="Critical Items"
+          value={String(criticalInventory)}
+          change="Attention"
+          positive={criticalInventory === 0}
+          icon="⚠"
+        />
+
+        <KPI
+          label="Open Alerts"
+          value={String(
+            alerts.filter((a) => !a.resolved).length
+          )}
+          change={`${delayedRoutes} route issues`}
+          positive={alerts.filter((a) => !a.resolved).length < 3}
+          icon="!"
+        />
+      </div>
+
+      <div className="admin-grid">
+        <AdminCard
+          icon="▣"
+          title="Inventory Configuration"
+          text="Configure synthetic stock thresholds and supply categories."
+          action="Manage Inventory"
+        />
+
+        <AdminCard
+          icon="⌁"
+          title="Route Configuration"
+          text="Configure operational routes and transportation priorities."
+          action="Manage Routes"
+        />
+
+        <AdminCard
+          icon="!"
+          title="Alert Rules"
+          text="Configure threshold-based synthetic risk detection."
+          action="Configure Alerts"
+        />
+
+        <AdminCard
+          icon="⚙"
+          title="System Settings"
+          text="Manage dashboard preferences and operational parameters."
+          action="Open Settings"
+        />
+      </div>
+
+      <Panel
+        title="Synthetic Data Controls"
+        subtitle="No production database is connected"
+      >
+        <div className="system-control">
+          <div>
+            <strong>Reset Demo Environment</strong>
+            <p>
+              Restore inventory, routes and alerts to
+              their original synthetic values.
+            </p>
+          </div>
+
+          <button
+            className="danger-button"
+            onClick={onReset}
+          >
+            Reset Demo Data
+          </button>
         </div>
-      </div>
-
-      <div className="ss-admin-grid">
-        <AdminCard
-          title="Inventory"
-          count={inventory.length}
-          description="Add and modify stock records."
-          onAdd={onInventory}
-          onView={() => onNavigate("Inventory")}
-        />
-
-        <AdminCard
-          title="Routes"
-          count={routes.length}
-          description="Create and update logistics routes."
-          onAdd={onRoute}
-          onView={() => onNavigate("Routes")}
-        />
-
-        <AdminCard
-          title="Risk Alerts"
-          count={alerts.length}
-          description="Create synthetic risk alerts."
-          onAdd={onAlert}
-          onView={() => onNavigate("Risk Alerts")}
-        />
-
-        <AdminCard
-          title="Bases"
-          count={bases.length}
-          description="Add new operational bases."
-          onAdd={onBase}
-          onView={() => onNavigate("Overview")}
-        />
-
-        <AdminCard
-          title="Users"
-          count={3}
-          description="Manage dashboard users and roles."
-          onAdd={() => onNavigate("User Management")}
-          onView={() => onNavigate("User Management")}
-        />
-      </div>
-
-      <div className="ss-info-banner">
-        <strong>Admin Access</strong>
-        <span>
-          Changes are stored in the current browser session
-          only. Supabase persistence can be connected later.
-        </span>
-      </div>
-    </div>
+      </Panel>
+    </>
   );
 }
 
 function AdminCard({
+  icon,
   title,
-  count,
-  description,
-  onAdd,
-  onView,
+  text,
+  action,
 }: {
+  icon: string;
   title: string;
-  count: number;
-  description: string;
-  onAdd: () => void;
-  onView: () => void;
+  text: string;
+  action: string;
 }) {
   return (
-    <div className="ss-admin-card">
-      <div className="ss-admin-card-top">
-        <div className="ss-admin-icon">⚙</div>
-
-        <strong>{count}</strong>
-      </div>
+    <div className="admin-card">
+      <div className="admin-card-icon">{icon}</div>
 
       <h3>{title}</h3>
-      <p>{description}</p>
 
-      <div className="ss-card-actions">
-        <button
-          className="ss-primary-btn"
-          onClick={onAdd}
-        >
-          + Add
-        </button>
+      <p>{text}</p>
 
-        <button
-          className="ss-small-btn"
-          onClick={onView}
-        >
-          Manage
-        </button>
-      </div>
+      <button
+        className="secondary-button"
+        onClick={() =>
+          alert(`${action} is available in demo mode.`)
+        }
+      >
+        {action} →
+      </button>
     </div>
   );
 }
 
 function UserManagement({
   users,
-  onAdd,
   onToggle,
+  showMessage,
 }: {
   users: UserItem[];
-  onAdd: () => void;
   onToggle: (id: number) => void;
+  showMessage: (message: string) => void;
 }) {
   return (
-    <div className="ss-page">
-      <div className="ss-page-title">
-        <div>
-          <h2>User Management</h2>
-          <p>Admin-only role management.</p>
-        </div>
+    <>
+      <div className="kpi-grid">
+        <KPI
+          label="Total Users"
+          value={String(users.length)}
+          change="Registered"
+          positive
+          icon="♙"
+        />
 
-        <button
-          className="ss-primary-btn"
-          onClick={onAdd}
-        >
-          + Add User
-        </button>
+        <KPI
+          label="Active Users"
+          value={String(
+            users.filter((u) => u.status === "Active").length
+          )}
+          change="Online access"
+          positive
+          icon="✓"
+        />
+
+        <KPI
+          label="Commanders"
+          value={String(
+            users.filter((u) => u.role === "commander").length
+          )}
+          change="Regional"
+          positive
+          icon="C"
+        />
+
+        <KPI
+          label="Captains"
+          value={String(
+            users.filter((u) => u.role === "captain").length
+          )}
+          change="Field"
+          positive
+          icon="F"
+        />
       </div>
 
-      <div className="ss-table-wrap">
-        <table className="ss-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {users.map((user) => (
-              <tr key={user.id}>
-                <td>
-                  <strong>{user.name}</strong>
-                </td>
-
-                <td>{user.email}</td>
-
-                <td>
-                  <span className="ss-role-tag">
-                    {user.role.toUpperCase()}
-                  </span>
-                </td>
-
-                <td>
-                  <span
-                    className={`ss-status ${
-                      user.status === "Active"
-                        ? "success"
-                        : "danger"
-                    }`}
-                  >
-                    {user.status}
-                  </span>
-                </td>
-
-                <td>
-                  <button
-                    className="ss-action-btn"
-                    onClick={() => onToggle(user.id)}
-                  >
-                    Toggle Status
-                  </button>
-                </td>
+      <Panel
+        title="User Access Management"
+        subtitle="Synthetic user accounts"
+      >
+        <div className="data-table-wrap">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+            </thead>
+
+            <tbody>
+              {users.map((user) => (
+                <tr key={user.id}>
+                  <td>
+                    <strong>{user.name}</strong>
+                  </td>
+
+                  <td>{user.email}</td>
+
+                  <td>
+                    <span className="role-tag">
+                      {user.role}
+                    </span>
+                  </td>
+
+                  <td>
+                    <span
+                      className={`status-pill ${
+                        user.status === "Active"
+                          ? "healthy"
+                          : "critical"
+                      }`}
+                    >
+                      {user.status}
+                    </span>
+                  </td>
+
+                  <td>
+                    <button
+                      className="secondary-button compact"
+                      onClick={() => {
+                        onToggle(user.id);
+                        showMessage(
+                          `${user.name} status updated.`
+                        );
+                      }}
+                    >
+                      Toggle
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Panel>
+    </>
   );
 }
 
 function SupplyRequests({
-  onMessage,
+  showMessage,
 }: {
-  onMessage: (message: string) => void;
+  showMessage: (message: string) => void;
 }) {
   const requests = [
     {
-      item: "Fuel",
-      quantity: "250 L",
+      id: "REQ-1042",
+      item: "Medical Kits",
+      quantity: 80,
       priority: "High",
+      location: "Forward Post A",
       status: "Pending",
     },
     {
-      item: "Medical Supplies",
-      quantity: "120 Units",
+      id: "REQ-1043",
+      item: "Diesel",
+      quantity: 400,
       priority: "Critical",
+      location: "Base Bravo",
       status: "Approved",
     },
     {
-      item: "Food Supplies",
-      quantity: "300 Units",
+      id: "REQ-1044",
+      item: "Water",
+      quantity: 250,
       priority: "Medium",
-      status: "Pending",
+      location: "Base Charlie",
+      status: "In Transit",
     },
   ];
 
   return (
-    <div className="ss-page">
-      <div className="ss-page-title">
-        <div>
-          <h2>Supply Requests</h2>
-          <p>Captain field supply requests.</p>
+    <>
+      <div className="kpi-grid">
+        <KPI
+          label="Open Requests"
+          value="7"
+          change="+2 today"
+          positive={false}
+          icon="＋"
+        />
+
+        <KPI
+          label="Critical Requests"
+          value="2"
+          change="Priority"
+          positive={false}
+          icon="⚠"
+        />
+
+        <KPI
+          label="Approved"
+          value="12"
+          change="+4 this week"
+          positive
+          icon="✓"
+        />
+
+        <KPI
+          label="In Transit"
+          value="5"
+          change="Moving"
+          positive
+          icon="⇄"
+        />
+      </div>
+
+      <Panel
+        title="Field Supply Requests"
+        subtitle="Synthetic captain requests"
+      >
+        <div className="request-list">
+          {requests.map((request) => (
+            <div className="request-row" key={request.id}>
+              <div className="request-id">
+                {request.id}
+              </div>
+
+              <div className="request-info">
+                <strong>{request.item}</strong>
+                <span>
+                  {request.quantity} units ·{" "}
+                  {request.location}
+                </span>
+              </div>
+
+              <span
+                className={`status-pill ${request.priority.toLowerCase()}`}
+              >
+                {request.priority}
+              </span>
+
+              <span className="request-status">
+                {request.status}
+              </span>
+
+              <button
+                className="secondary-button compact"
+                onClick={() =>
+                  showMessage(
+                    `${request.id} reviewed successfully.`
+                  )
+                }
+              >
+                Review
+              </button>
+            </div>
+          ))}
         </div>
+      </Panel>
 
-        <button
-          className="ss-primary-btn"
-          onClick={() =>
-            onMessage("New supply request created")
-          }
-        >
-          + New Request
-        </button>
-      </div>
-
-      <div className="ss-alert-page">
-        {requests.map((request, index) => (
-          <div className="ss-alert-card" key={index}>
-            <div className="ss-severity high">
-              +
-            </div>
-
-            <div>
-              <strong>{request.item}</strong>
-              <span>{request.quantity}</span>
-            </div>
-
-            <span
-              className={`ss-status ${request.priority.toLowerCase()}`}
-            >
-              {request.priority}
-            </span>
-
-            <span className="ss-status">
-              {request.status}
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function InventoryModal({
-  item,
-  onClose,
-  onSave,
-}: {
-  item: InventoryItem | null;
-  onClose: () => void;
-  onSave: (item: InventoryItem) => void;
-}) {
-  const [name, setName] = useState(item?.name || "");
-  const [category, setCategory] = useState(
-    item?.category || "General"
-  );
-  const [quantity, setQuantity] = useState(
-    String(item?.quantity || "")
-  );
-  const [minStock, setMinStock] = useState(
-    String(item?.minStock || "")
-  );
-  const [unit, setUnit] = useState(item?.unit || "Units");
-  const [location, setLocation] = useState(
-    item?.location || "Central Base"
-  );
-
-  return (
-    <Modal
-      title={item ? "Edit Inventory" : "Add Inventory"}
-      onClose={onClose}
-    >
-      <Field
-        label="Item Name"
-        value={name}
-        onChange={setName}
-      />
-
-      <Field
-        label="Category"
-        value={category}
-        onChange={setCategory}
-      />
-
-      <Field
-        label="Quantity"
-        value={quantity}
-        onChange={setQuantity}
-        type="number"
-      />
-
-      <Field
-        label="Minimum Stock"
-        value={minStock}
-        onChange={setMinStock}
-        type="number"
-      />
-
-      <Field
-        label="Unit"
-        value={unit}
-        onChange={setUnit}
-      />
-
-      <Field
-        label="Location"
-        value={location}
-        onChange={setLocation}
-      />
-
-      <ModalActions
-        onClose={onClose}
-        onSave={() =>
-          onSave({
-            id: item?.id || 0,
-            name,
-            category,
-            quantity: Number(quantity),
-            minStock: Number(minStock),
-            unit,
-            location,
-          })
-        }
-      />
-    </Modal>
-  );
-}
-
-function RouteModal({
-  route,
-  onClose,
-  onSave,
-}: {
-  route: RouteItem | null;
-  onClose: () => void;
-  onSave: (route: RouteItem) => void;
-}) {
-  const [name, setName] = useState(
-    route?.name || "Route Echo"
-  );
-
-  const [from, setFrom] = useState(
-    route?.from || "Central Base"
-  );
-
-  const [to, setTo] = useState(
-    route?.to || "Northern Base"
-  );
-
-  const [status, setStatus] =
-    useState<RouteItem["status"]>(
-      route?.status || "Active"
-    );
-
-  const [eta, setEta] = useState(
-    route?.eta || "4h 00m"
-  );
-
-  return (
-    <Modal
-      title={route ? "Edit Route" : "Add Route"}
-      onClose={onClose}
-    >
-      <Field
-        label="Route Name"
-        value={name}
-        onChange={setName}
-      />
-
-      <Field
-        label="Origin"
-        value={from}
-        onChange={setFrom}
-      />
-
-      <Field
-        label="Destination"
-        value={to}
-        onChange={setTo}
-      />
-
-      <label className="ss-field">
-        <span>Status</span>
-
-        <select
-          className="ss-input"
-          value={status}
-          onChange={(e) =>
-            setStatus(
-              e.target.value as RouteItem["status"]
-            )
-          }
-        >
-          <option>Active</option>
-          <option>Delayed</option>
-          <option>At Risk</option>
-          <option>Completed</option>
-        </select>
-      </label>
-
-      <Field
-        label="ETA"
-        value={eta}
-        onChange={setEta}
-      />
-
-      <ModalActions
-        onClose={onClose}
-        onSave={() =>
-          onSave({
-            id: route?.id || 0,
-            name,
-            from,
-            to,
-            status,
-            eta,
-          })
-        }
-      />
-    </Modal>
-  );
-}
-
-function AlertModal({
-  onClose,
-  onSave,
-}: {
-  onClose: () => void;
-  onSave: (alert: Omit<AlertItem, "id">) => void;
-}) {
-  const [title, setTitle] = useState("");
-  const [severity, setSeverity] =
-    useState<AlertItem["severity"]>("High");
-
-  const [location, setLocation] =
-    useState("Central Base");
-
-  return (
-    <Modal title="Create Risk Alert" onClose={onClose}>
-      <Field
-        label="Alert Title"
-        value={title}
-        onChange={setTitle}
-      />
-
-      <label className="ss-field">
-        <span>Severity</span>
-
-        <select
-          className="ss-input"
-          value={severity}
-          onChange={(e) =>
-            setSeverity(
-              e.target.value as AlertItem["severity"]
-            )
-          }
-        >
-          <option>Critical</option>
-          <option>High</option>
-          <option>Medium</option>
-          <option>Low</option>
-        </select>
-      </label>
-
-      <Field
-        label="Location"
-        value={location}
-        onChange={setLocation}
-      />
-
-      <ModalActions
-        onClose={onClose}
-        onSave={() =>
-          onSave({
-            title: title || "New synthetic risk alert",
-            severity,
-            location,
-            status: "Open",
-          })
-        }
-      />
-    </Modal>
-  );
-}
-
-function BaseModal({
-  onClose,
-  onSave,
-}: {
-  onClose: () => void;
-  onSave: (base: Omit<BaseItem, "id">) => void;
-}) {
-  const [name, setName] = useState("Southern Base");
-  const [location, setLocation] =
-    useState("Sector S-05");
-
-  const [readiness, setReadiness] = useState("70");
-  const [stock, setStock] = useState("70");
-
-  return (
-    <Modal title="Add Operational Base" onClose={onClose}>
-      <Field
-        label="Base Name"
-        value={name}
-        onChange={setName}
-      />
-
-      <Field
-        label="Location"
-        value={location}
-        onChange={setLocation}
-      />
-
-      <Field
-        label="Readiness %"
-        value={readiness}
-        onChange={setReadiness}
-        type="number"
-      />
-
-      <Field
-        label="Stock %"
-        value={stock}
-        onChange={setStock}
-        type="number"
-      />
-
-      <ModalActions
-        onClose={onClose}
-        onSave={() =>
-          onSave({
-            name,
-            location,
-            readiness: Number(readiness),
-            stock: Number(stock),
-          })
-        }
-      />
-    </Modal>
-  );
-}
-
-function UserModal({
-  onClose,
-  onSave,
-}: {
-  onClose: () => void;
-  onSave: (user: Omit<UserItem, "id">) => void;
-}) {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-
-  const [role, setRole] = useState<Role>("captain");
-
-  return (
-    <Modal title="Add User" onClose={onClose}>
-      <Field
-        label="Full Name"
-        value={name}
-        onChange={setName}
-      />
-
-      <Field
-        label="Email"
-        value={email}
-        onChange={setEmail}
-      />
-
-      <label className="ss-field">
-        <span>Role</span>
-
-        <select
-          className="ss-input"
-          value={role}
-          onChange={(e) =>
-            setRole(e.target.value as Role)
-          }
-        >
-          <option value="admin">Admin</option>
-          <option value="commander">Commander</option>
-          <option value="captain">Captain</option>
-        </select>
-      </label>
-
-      <ModalActions
-        onClose={onClose}
-        onSave={() =>
-          onSave({
-            name: name || "New User",
-            email: email || "user@supplyshield.ai",
-            role,
-            status: "Active",
-          })
-        }
-      />
-    </Modal>
-  );
-}
-
-function Modal({
-  title,
-  onClose,
-  children,
-}: {
-  title: string;
-  onClose: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="ss-modal-overlay">
-      <div className="ss-modal">
-        <div className="ss-modal-head">
-          <h2>{title}</h2>
+      <Panel
+        title="Create New Request"
+        subtitle="Demo request action"
+      >
+        <div className="request-create">
+          <p>
+            Need additional supplies for your field
+            unit? Create a synthetic request.
+          </p>
 
           <button
-            className="ss-close"
-            onClick={onClose}
+            className="primary-button"
+            onClick={() =>
+              showMessage(
+                "New supply request created in demo mode."
+              )
+            }
           >
-            ×
+            + Create Supply Request
           </button>
         </div>
+      </Panel>
+    </>
+  );
+}
 
-        <div className="ss-modal-body">{children}</div>
-      </div>
+function TrendChart() {
+  const values = [52, 61, 58, 72, 68, 84, 79];
+
+  return (
+    <div className="trend-chart">
+      {values.map((value, index) => (
+        <div className="trend-column" key={index}>
+          <div
+            className="trend-bar"
+            style={{ height: `${value}%` }}
+          />
+
+          <span>
+            {["M", "T", "W", "T", "F", "S", "S"][index]}
+          </span>
+        </div>
+      ))}
     </div>
-  );
-}
-
-function Field({
-  label,
-  value,
-  onChange,
-  type = "text",
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  type?: string;
-}) {
-  return (
-    <label className="ss-field">
-      <span>{label}</span>
-
-      <input
-        className="ss-input"
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-      />
-    </label>
-  );
-}
-
-function ModalActions({
-  onClose,
-  onSave,
-}: {
-  onClose: () => void;
-  onSave: () => void;
-}) {
-  return (
-    <div className="ss-modal-actions">
-      <button
-        className="ss-small-btn"
-        onClick={onClose}
-      >
-        Cancel
-      </button>
-
-      <button
-        className="ss-primary-btn"
-        onClick={onSave}
-      >
-        Save Changes
-      </button>
-    </div>
-  );
-}
-
-function ScenarioResult({
-  onClose,
-}: {
-  onClose: () => void;
-}) {
-  return (
-    <Modal
-      title="Simulation Result"
-      onClose={onClose}
-    >
-      <div className="ss-simulation">
-        <div className="ss-simulation-step">
-          <strong>1</strong>
-          <span>Route Delta blocked</span>
-        </div>
-
-        <div className="ss-simulation-step">
-          <strong>2</strong>
-          <span>2 bases affected</span>
-        </div>
-
-        <div className="ss-simulation-step">
-          <strong>3</strong>
-          <span>Estimated delay: 4.5 hours</span>
-        </div>
-
-        <div className="ss-simulation-step">
-          <strong>4</strong>
-          <span>Alternative Route Alpha recommended</span>
-        </div>
-      </div>
-
-      <div className="ss-modal-actions">
-        <button
-          className="ss-primary-btn"
-          onClick={onClose}
-        >
-          Close
-        </button>
-      </div>
-    </Modal>
   );
 }
