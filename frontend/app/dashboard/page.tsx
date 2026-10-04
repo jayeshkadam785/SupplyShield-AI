@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 type Role = "admin" | "commander" | "captain";
 
@@ -625,6 +625,7 @@ function NavButton({
 }) {
   return (
     <button
+      type="button"
       className={`nav-button ${active ? "active" : ""}`}
       onClick={onClick}
     >
@@ -692,7 +693,11 @@ function Overview({
         <KPI
           label="Risk Alerts"
           value={String(activeAlerts.length)}
-          change={critical.length > 0 ? "Action needed" : "Stable"}
+          change={
+            critical.length > 0
+              ? "Action needed"
+              : "Stable"
+          }
           positive={critical.length === 0}
           icon="!"
         />
@@ -732,6 +737,7 @@ function Overview({
           </div>
 
           <button
+            type="button"
             className="secondary-button"
             onClick={() => onNavigate("routes")}
           >
@@ -767,6 +773,7 @@ function Overview({
           </div>
 
           <button
+            type="button"
             className="secondary-button"
             onClick={() => onNavigate("alerts")}
           >
@@ -795,7 +802,10 @@ function Overview({
               );
 
               return (
-                <div className="readiness-item" key={item.id}>
+                <div
+                  className="readiness-item"
+                  key={item.id}
+                >
                   <div className="readiness-header">
                     <span>{item.item}</span>
                     <strong>{percentage}%</strong>
@@ -818,6 +828,7 @@ function Overview({
           </div>
 
           <button
+            type="button"
             className="secondary-button"
             onClick={() => onNavigate("inventory")}
           >
@@ -832,6 +843,7 @@ function Overview({
       >
         <div className="quick-actions">
           <button
+            type="button"
             onClick={() => onNavigate("inventory")}
           >
             <span>▣</span>
@@ -839,6 +851,7 @@ function Overview({
           </button>
 
           <button
+            type="button"
             onClick={() => onNavigate("routes")}
           >
             <span>⌁</span>
@@ -846,6 +859,7 @@ function Overview({
           </button>
 
           <button
+            type="button"
             onClick={() => onNavigate("forecast")}
           >
             <span>◒</span>
@@ -853,6 +867,7 @@ function Overview({
           </button>
 
           <button
+            type="button"
             onClick={() => onNavigate("reports")}
           >
             <span>▤</span>
@@ -982,37 +997,29 @@ function SupplyChain({
         subtitle="Synthetic movement of supplies"
       >
         <div className="supply-flow">
-          <FlowStep
-            number="01"
+          <FlowBox
             title="Central Depot"
-            text="Stock received"
             value="1,840 units"
           />
 
           <div className="flow-arrow">→</div>
 
-          <FlowStep
-            number="02"
+          <FlowBox
             title="Regional Hub"
-            text="Processing"
             value="1,520 units"
           />
 
           <div className="flow-arrow">→</div>
 
-          <FlowStep
-            number="03"
+          <FlowBox
             title="Field Bases"
-            text="Distributed"
             value="1,240 units"
           />
 
           <div className="flow-arrow">→</div>
 
-          <FlowStep
-            number="04"
+          <FlowBox
             title="Field Units"
-            text="Consumed"
             value="920 units"
           />
         </div>
@@ -1081,6 +1088,27 @@ function SupplyChain({
         </Panel>
       </div>
     </>
+  );
+}
+
+/*
+  FIX FOR VERCEL ERROR:
+  FlowBox was being used without being defined.
+*/
+function FlowBox({
+  title,
+  value,
+}: {
+  title: string;
+  value: string;
+}) {
+  return (
+    <div className="flow-step">
+      <span className="flow-number">●</span>
+      <strong>{title}</strong>
+      <span>Supply movement</span>
+      <b>{value}</b>
+    </div>
   );
 }
 
@@ -1215,6 +1243,7 @@ function InventoryPage({
           <span>{inventory.length} tracked items</span>
 
           <button
+            type="button"
             className="secondary-button compact"
             onClick={onRefresh}
           >
@@ -1424,7 +1453,7 @@ function AlertsPage({
           label="Medium"
           value={String(medium)}
           change="Monitor"
-          positive={true}
+          positive
           icon="◐"
         />
 
@@ -1457,9 +1486,7 @@ function AlertsPage({
 
               <div className="alert-content">
                 <strong>{alert.title}</strong>
-
                 <span>{alert.description}</span>
-
                 <small>
                   {alert.location} · {alert.time}
                 </small>
@@ -1475,6 +1502,7 @@ function AlertsPage({
 
               {!alert.resolved && (
                 <button
+                  type="button"
                   className="secondary-button compact"
                   onClick={() => onResolve(alert.id)}
                 >
@@ -1499,6 +1527,7 @@ function AnalyticsPage({
   alerts: AlertItem[];
 }) {
   const deliveryScore = 92;
+
   const inventoryScore = Math.round(
     (inventory.filter((i) => i.status === "Healthy").length /
       inventory.length) *
@@ -1659,11 +1688,36 @@ function Insight({
 
 function ForecastPage() {
   const forecast = [
-    { item: "Rice", current: 820, predicted: 620, confidence: 94 },
-    { item: "Medical Kits", current: 140, predicted: 240, confidence: 91 },
-    { item: "Diesel", current: 92, predicted: 210, confidence: 96 },
-    { item: "Water", current: 670, predicted: 540, confidence: 89 },
-    { item: "Blankets", current: 180, predicted: 360, confidence: 86 },
+    {
+      item: "Rice",
+      current: 820,
+      predicted: 620,
+      confidence: 94,
+    },
+    {
+      item: "Medical Kits",
+      current: 140,
+      predicted: 240,
+      confidence: 91,
+    },
+    {
+      item: "Diesel",
+      current: 92,
+      predicted: 210,
+      confidence: 96,
+    },
+    {
+      item: "Water",
+      current: 670,
+      predicted: 540,
+      confidence: 89,
+    },
+    {
+      item: "Blankets",
+      current: 180,
+      predicted: 360,
+      confidence: 86,
+    },
   ];
 
   return (
@@ -1708,7 +1762,10 @@ function ForecastPage() {
       >
         <div className="forecast-list">
           {forecast.map((item) => (
-            <div className="forecast-row" key={item.item}>
+            <div
+              className="forecast-row"
+              key={item.item}
+            >
               <div className="forecast-name">
                 <strong>{item.item}</strong>
                 <span>
@@ -1851,7 +1908,10 @@ function ScenarioPage({
 
       <div className="scenario-grid">
         {scenarios.map((scenario) => (
-          <div className="scenario-card" key={scenario.id}>
+          <div
+            className="scenario-card"
+            key={scenario.id}
+          >
             <div className="scenario-icon">◇</div>
 
             <span
@@ -1870,6 +1930,7 @@ function ScenarioPage({
             </div>
 
             <button
+              type="button"
               className="primary-button"
               onClick={() =>
                 simulate(scenario.title)
@@ -1965,7 +2026,10 @@ function ReportsPage({
       >
         <div className="report-list">
           {reports.map((report) => (
-            <div className="report-row" key={report.title}>
+            <div
+              className="report-row"
+              key={report.title}
+            >
               <div className="report-icon">▤</div>
 
               <div className="report-info">
@@ -1977,6 +2041,7 @@ function ReportsPage({
               </div>
 
               <button
+                type="button"
                 className="secondary-button compact"
                 onClick={() =>
                   showMessage(
@@ -2009,6 +2074,10 @@ function ManageSystem({
   delayedRoutes: number;
   onReset: () => void;
 }) {
+  const openAlerts = alerts.filter(
+    (a) => !a.resolved
+  ).length;
+
   return (
     <>
       <div className="kpi-grid">
@@ -2038,11 +2107,9 @@ function ManageSystem({
 
         <KPI
           label="Open Alerts"
-          value={String(
-            alerts.filter((a) => !a.resolved).length
-          )}
+          value={String(openAlerts)}
           change={`${delayedRoutes} route issues`}
-          positive={alerts.filter((a) => !a.resolved).length < 3}
+          positive={openAlerts < 3}
           icon="!"
         />
       </div>
@@ -2091,6 +2158,7 @@ function ManageSystem({
           </div>
 
           <button
+            type="button"
             className="danger-button"
             onClick={onReset}
           >
@@ -2122,6 +2190,7 @@ function AdminCard({
       <p>{text}</p>
 
       <button
+        type="button"
         className="secondary-button"
         onClick={() =>
           alert(`${action} is available in demo mode.`)
@@ -2156,7 +2225,9 @@ function UserManagement({
         <KPI
           label="Active Users"
           value={String(
-            users.filter((u) => u.status === "Active").length
+            users.filter(
+              (u) => u.status === "Active"
+            ).length
           )}
           change="Online access"
           positive
@@ -2166,7 +2237,9 @@ function UserManagement({
         <KPI
           label="Commanders"
           value={String(
-            users.filter((u) => u.role === "commander").length
+            users.filter(
+              (u) => u.role === "commander"
+            ).length
           )}
           change="Regional"
           positive
@@ -2176,7 +2249,9 @@ function UserManagement({
         <KPI
           label="Captains"
           value={String(
-            users.filter((u) => u.role === "captain").length
+            users.filter(
+              (u) => u.role === "captain"
+            ).length
           )}
           change="Field"
           positive
@@ -2229,6 +2304,7 @@ function UserManagement({
 
                   <td>
                     <button
+                      type="button"
                       className="secondary-button compact"
                       onClick={() => {
                         onToggle(user.id);
@@ -2324,7 +2400,10 @@ function SupplyRequests({
       >
         <div className="request-list">
           {requests.map((request) => (
-            <div className="request-row" key={request.id}>
+            <div
+              className="request-row"
+              key={request.id}
+            >
               <div className="request-id">
                 {request.id}
               </div>
@@ -2348,6 +2427,7 @@ function SupplyRequests({
               </span>
 
               <button
+                type="button"
                 className="secondary-button compact"
                 onClick={() =>
                   showMessage(
@@ -2373,6 +2453,7 @@ function SupplyRequests({
           </p>
 
           <button
+            type="button"
             className="primary-button"
             onClick={() =>
               showMessage(
@@ -2394,7 +2475,10 @@ function TrendChart() {
   return (
     <div className="trend-chart">
       {values.map((value, index) => (
-        <div className="trend-column" key={index}>
+        <div
+          className="trend-column"
+          key={index}
+        >
           <div
             className="trend-bar"
             style={{ height: `${value}%` }}
