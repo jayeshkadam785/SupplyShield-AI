@@ -319,17 +319,21 @@ export default function DashboardPage() {
 
   const [message, setMessage] = useState("");
 
-  const meta = pageMeta[activePage] ?? roleMeta[role];
+  const meta =
+    pageMeta[activePage] ?? roleMeta[role];
 
-  const activeAlerts = alerts.filter((a) => !a.resolved).length;
+  const activeAlerts =
+    alerts.filter((a) => !a.resolved).length;
 
-  const criticalInventory = inventory.filter(
-    (item) => item.status === "Critical"
-  ).length;
+  const criticalInventory =
+    inventory.filter(
+      (item) => item.status === "Critical"
+    ).length;
 
-  const delayedRoutes = routes.filter(
-    (route) => route.status !== "Active"
-  ).length;
+  const delayedRoutes =
+    routes.filter(
+      (route) => route.status !== "Active"
+    ).length;
 
   function showMessage(text: string) {
     setMessage(text);
@@ -372,7 +376,10 @@ export default function DashboardPage() {
   function changeRole(nextRole: Role) {
     setRole(nextRole);
     setActivePage("overview");
-    showMessage(`Switched to ${nextRole} dashboard.`);
+
+    showMessage(
+      `Switched to ${nextRole} dashboard.`
+    );
   }
 
   return (
@@ -386,134 +393,162 @@ export default function DashboardPage() {
           <div className="brand-mark">S</div>
 
           <div>
-            <strong>SupplyShield</strong>
-            <span>AI Logistics</span>
+            <strong>SupplyShield AI</strong>
+            <span>Logistics Intelligence</span>
           </div>
         </div>
 
-        <div className="role-box">
-          <span className="small-label">ACTIVE ROLE</span>
+        <div className="role-switcher">
+          <label>ACTIVE ROLE</label>
 
           <select
             value={role}
             onChange={(e) =>
-              changeRole(e.target.value as Role)
+              changeRole(
+                e.target.value as Role
+              )
             }
           >
-            <option value="admin">Administrator</option>
-            <option value="commander">Commander</option>
-            <option value="captain">Captain</option>
+            <option value="admin">
+              Administrator
+            </option>
+
+            <option value="commander">
+              Commander
+            </option>
+
+            <option value="captain">
+              Captain
+            </option>
           </select>
         </div>
 
         <nav className="sidebar-nav">
           <div className="nav-section-title">
-            COMMAND CENTER
+            MAIN
           </div>
 
           {navItems.map((item) => (
-            <NavButton
+            <button
               key={item.id}
-              active={activePage === item.id}
-              label={item.label}
-              icon={item.icon}
-              onClick={() => setActivePage(item.id)}
-              badge={
-                item.id === "alerts"
-                  ? activeAlerts
-                  : undefined
+              className={`nav-button ${
+                activePage === item.id
+                  ? "active"
+                  : ""
+              }`}
+              onClick={() =>
+                setActivePage(item.id)
               }
-            />
+            >
+              <span>{item.icon}</span>
+              {item.label}
+            </button>
           ))}
 
           {role === "admin" && (
             <>
-              <div className="nav-section-title admin-title">
+              <div className="nav-section-title">
                 ADMINISTRATION
               </div>
 
-              <NavButton
-                active={activePage === "manage"}
-                label="Manage System"
-                icon="⚙"
-                onClick={() => setActivePage("manage")}
-              />
+              <button
+                className={`nav-button ${
+                  activePage === "manage"
+                    ? "active"
+                    : ""
+                }`}
+                onClick={() =>
+                  setActivePage("manage")
+                }
+              >
+                <span>⚙</span>
+                Manage System
+              </button>
 
-              <NavButton
-                active={activePage === "users"}
-                label="User Management"
-                icon="♙"
-                onClick={() => setActivePage("users")}
-              />
+              <button
+                className={`nav-button ${
+                  activePage === "users"
+                    ? "active"
+                    : ""
+                }`}
+                onClick={() =>
+                  setActivePage("users")
+                }
+              >
+                <span>◉</span>
+                User Management
+              </button>
             </>
           )}
 
           {role === "captain" && (
             <>
-              <div className="nav-section-title admin-title">
+              <div className="nav-section-title">
                 FIELD OPERATIONS
               </div>
 
-              <NavButton
-                active={activePage === "requests"}
-                label="Supply Requests"
-                icon="＋"
-                onClick={() => setActivePage("requests")}
-              />
+              <button
+                className={`nav-button ${
+                  activePage === "requests"
+                    ? "active"
+                    : ""
+                }`}
+                onClick={() =>
+                  setActivePage("requests")
+                }
+              >
+                <span>+</span>
+                Supply Requests
+              </button>
             </>
           )}
         </nav>
 
-        <div className="sidebar-bottom">
+        <div className="sidebar-footer">
           <button
-            className="theme-btn"
+            className="theme-toggle"
             onClick={() =>
-              setTheme((current) =>
-                current === "dark" ? "light" : "dark"
+              setTheme(
+                theme === "dark"
+                  ? "light"
+                  : "dark"
               )
             }
           >
-            {theme === "dark" ? "☀ Light Mode" : "☾ Dark Mode"}
+            {theme === "dark"
+              ? "☀ Light Mode"
+              : "☾ Dark Mode"}
           </button>
 
           <div className="system-status">
             <span className="status-dot" />
-            All systems operational
+            System Operational
           </div>
         </div>
       </aside>
 
-      <section className="dashboard-main">
+      <section className="main-content">
         <header className="topbar">
           <div>
-            <div className="breadcrumb">
-              SUPPLYSHIELD AI / {role.toUpperCase()}
-            </div>
-
             <h1>{meta.title}</h1>
-
             <p>{meta.subtitle}</p>
           </div>
 
           <div className="topbar-right">
-            <div className="live-status">
-              <span className="status-dot" />
-              LIVE
+            <div className="role-badge">
+              {roleMeta[role].title}
             </div>
 
-            <div className="user-avatar">
-              {role === "admin"
-                ? "A"
-                : role === "commander"
-                ? "C"
-                : "F"}
+            <div className="live-indicator">
+              <span />
+              LIVE
             </div>
           </div>
         </header>
 
         {message && (
           <div className="toast-message">
-            ✓ {message}
+            {message}
           </div>
         )}
 
@@ -532,28 +567,29 @@ export default function DashboardPage() {
             <SupplyChain
               inventory={inventory}
               routes={routes}
-              alerts={alerts}
             />
           )}
 
           {activePage === "inventory" && (
             <InventoryPage
               inventory={inventory}
-              onRefresh={() => {
-                setInventory([...inventory]);
-                showMessage("Inventory refreshed.");
-              }}
+              setInventory={setInventory}
+              showMessage={showMessage}
             />
           )}
 
           {activePage === "routes" && (
-            <RoutesPage routes={routes} />
+            <RoutesPage
+              routes={routes}
+              setRoutes={setRoutes}
+              showMessage={showMessage}
+            />
           )}
 
           {activePage === "alerts" && (
             <AlertsPage
               alerts={alerts}
-              onResolve={resolveAlert}
+              resolveAlert={resolveAlert}
             />
           )}
 
@@ -561,7 +597,6 @@ export default function DashboardPage() {
             <AnalyticsPage
               inventory={inventory}
               routes={routes}
-              alerts={alerts}
             />
           )}
 
@@ -570,75 +605,53 @@ export default function DashboardPage() {
           )}
 
           {activePage === "scenarios" && (
-            <ScenarioPage showMessage={showMessage} />
-          )}
-
-          {activePage === "reports" && (
-            <ReportsPage showMessage={showMessage} />
-          )}
-
-          {activePage === "manage" && role === "admin" && (
-            <ManageSystem
-              inventory={inventory}
-              routes={routes}
-              alerts={alerts}
-              criticalInventory={criticalInventory}
-              delayedRoutes={delayedRoutes}
-              onReset={() => {
-                setInventory(initialInventory);
-                setRoutes(initialRoutes);
-                setAlerts(initialAlerts);
-                showMessage("Synthetic system data reset.");
-              }}
-            />
-          )}
-
-          {activePage === "users" && role === "admin" && (
-            <UserManagement
-              users={users}
-              onToggle={toggleUser}
+            <ScenarioPage
               showMessage={showMessage}
             />
           )}
 
-          {activePage === "requests" && role === "captain" && (
-            <SupplyRequests showMessage={showMessage} />
+          {activePage === "reports" && (
+            <ReportsPage
+              showMessage={showMessage}
+            />
           )}
+
+          {activePage === "manage" &&
+            role === "admin" && (
+              <ManageSystem
+                inventory={inventory}
+                routes={routes}
+                alerts={alerts}
+                setInventory={setInventory}
+                setRoutes={setRoutes}
+                setAlerts={setAlerts}
+                showMessage={showMessage}
+              />
+            )}
+
+          {activePage === "users" &&
+            role === "admin" && (
+              <UserManagement
+                users={users}
+                toggleUser={toggleUser}
+              />
+            )}
+
+          {activePage === "requests" &&
+            role === "captain" && (
+              <SupplyRequests
+                showMessage={showMessage}
+              />
+            )}
         </div>
       </section>
     </main>
   );
 }
 
-function NavButton({
-  active,
-  label,
-  icon,
-  onClick,
-  badge,
-}: {
-  active: boolean;
-  label: string;
-  icon: string;
-  onClick: () => void;
-  badge?: number;
-}) {
-  return (
-    <button
-      type="button"
-      className={`nav-button ${active ? "active" : ""}`}
-      onClick={onClick}
-    >
-      <span className="nav-icon">{icon}</span>
-
-      <span>{label}</span>
-
-      {badge !== undefined && badge > 0 && (
-        <span className="nav-badge">{badge}</span>
-      )}
-    </button>
-  );
-}
+/* =========================================================
+   ROLE BASED OVERVIEW
+   ========================================================= */
 
 function Overview({
   inventory,
@@ -653,231 +666,1033 @@ function Overview({
   role: Role;
   onNavigate: (page: string) => void;
 }) {
-  const activeAlerts = alerts.filter(
-    (a) => !a.resolved
-  );
+  const activeAlerts =
+    alerts.filter((a) => !a.resolved);
 
-  const critical = inventory.filter(
-    (i) => i.status === "Critical"
-  );
+  const criticalAlerts =
+    activeAlerts.filter(
+      (a) => a.severity === "Critical"
+    );
+
+  const highAlerts =
+    activeAlerts.filter(
+      (a) => a.severity === "High"
+    );
+
+  const activeRoutes =
+    routes.filter(
+      (r) => r.status === "Active"
+    );
+
+  const delayedRoutes =
+    routes.filter(
+      (r) => r.status === "Delayed"
+    );
+
+  const blockedRoutes =
+    routes.filter(
+      (r) => r.status === "Blocked"
+    );
+
+  const criticalInventory =
+    inventory.filter(
+      (i) => i.status === "Critical"
+    );
+
+  const lowInventory =
+    inventory.filter(
+      (i) => i.status === "Low"
+    );
+
+  const healthyInventory =
+    inventory.filter(
+      (i) => i.status === "Healthy"
+    );
+
+  /* =====================================================
+     ADMIN
+     ===================================================== */
+
+  if (role === "admin") {
+    const totalStock =
+      inventory.reduce(
+        (sum, item) =>
+          sum + item.stock,
+        0
+      );
+
+    return (
+      <>
+        <div className="kpi-grid">
+          <KPI
+            label="Total Operations"
+            value="24"
+            change="+8.4%"
+            positive
+            icon="◉"
+          />
+
+          <KPI
+            label="Network Inventory"
+            value={totalStock.toLocaleString()}
+            change="+6.2%"
+            positive
+            icon="▣"
+          />
+
+          <KPI
+            label="Active Routes"
+            value={String(
+              activeRoutes.length
+            )}
+            change="+2"
+            positive
+            icon="⌁"
+          />
+
+          <KPI
+            label="Critical Alerts"
+            value={String(
+              criticalAlerts.length
+            )}
+            change={
+              criticalAlerts.length > 0
+                ? "Action needed"
+                : "Stable"
+            }
+            positive={
+              criticalAlerts.length === 0
+            }
+            icon="!"
+          />
+        </div>
+
+        <div className="dashboard-grid two-column">
+          <Panel
+            title="System Command Center"
+            subtitle="Complete supply network control"
+          >
+            <div className="network-map">
+              <div className="map-grid" />
+
+              <div className="map-node node-a">
+                <strong>HQ</strong>
+                <span>
+                  Central Command
+                </span>
+              </div>
+
+              <div className="map-node node-b">
+                <strong>Alpha</strong>
+                <span>
+                  Operational
+                </span>
+              </div>
+
+              <div className="map-node node-c">
+                <strong>Bravo</strong>
+                <span>Fuel Risk</span>
+              </div>
+
+              <div className="map-node node-d">
+                <strong>Charlie</strong>
+                <span>Stable</span>
+              </div>
+
+              <div className="route-line line-1" />
+              <div className="route-line line-2" />
+              <div className="route-line line-3" />
+            </div>
+
+            <button
+              className="secondary-button compact"
+              onClick={() =>
+                onNavigate("supply")
+              }
+            >
+              Open Supply Network →
+            </button>
+          </Panel>
+
+          <Panel
+            title="Global Risk Monitor"
+            subtitle="System-wide operational risks"
+          >
+            <div className="alert-list">
+              {activeAlerts
+                .slice(0, 4)
+                .map((alert) => (
+                  <div
+                    className="alert-row"
+                    key={alert.id}
+                  >
+                    <div
+                      className={`severity-dot ${alert.severity.toLowerCase()}`}
+                    />
+
+                    <div className="alert-content">
+                      <strong>
+                        {alert.title}
+                      </strong>
+
+                      <span>
+                        {alert.location} •{" "}
+                        {alert.time}
+                      </span>
+                    </div>
+
+                    <span className="status-pill">
+                      {alert.severity}
+                    </span>
+                  </div>
+                ))}
+            </div>
+
+            <button
+              className="secondary-button compact"
+              onClick={() =>
+                onNavigate("alerts")
+              }
+            >
+              Manage All Risks →
+            </button>
+          </Panel>
+        </div>
+
+        <div className="dashboard-grid two-column">
+          <Panel
+            title="Network Readiness"
+            subtitle="Current system-wide inventory status"
+          >
+            <div className="readiness-list">
+              {inventory
+                .slice(0, 5)
+                .map((item) => {
+                  const percentage =
+                    Math.min(
+                      100,
+                      Math.round(
+                        (item.stock /
+                          item.min) *
+                          100
+                      )
+                    );
+
+                  return (
+                    <div
+                      className="readiness-item"
+                      key={item.id}
+                    >
+                      <div className="readiness-header">
+                        <strong>
+                          {item.item}
+                        </strong>
+
+                        <span>
+                          {item.stock} /{" "}
+                          {item.min}
+                        </span>
+                      </div>
+
+                      <div className="progress">
+                        <div
+                          className="progress-bar"
+                          style={{
+                            width: `${percentage}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+
+            <button
+              className="secondary-button compact"
+              onClick={() =>
+                onNavigate("inventory")
+              }
+            >
+              Open System Inventory →
+            </button>
+          </Panel>
+
+          <Panel
+            title="System Performance"
+            subtitle="Synthetic 7-day logistics performance"
+          >
+            <TrendChart />
+
+            <div className="route-meta">
+              <span>
+                Healthy:{" "}
+                <strong>
+                  {healthyInventory.length}
+                </strong>
+              </span>
+
+              <span>
+                Low:{" "}
+                <strong>
+                  {lowInventory.length}
+                </strong>
+              </span>
+
+              <span>
+                Critical:{" "}
+                <strong>
+                  {criticalInventory.length}
+                </strong>
+              </span>
+            </div>
+          </Panel>
+        </div>
+
+        <Panel
+          title="Administrator Quick Actions"
+          subtitle="System-wide management controls"
+        >
+          <div className="quick-actions">
+            <button
+              onClick={() =>
+                onNavigate("inventory")
+              }
+            >
+              ▣ Manage Inventory
+            </button>
+
+            <button
+              onClick={() =>
+                onNavigate("users")
+              }
+            >
+              ◉ Manage Users
+            </button>
+
+            <button
+              onClick={() =>
+                onNavigate("analytics")
+              }
+            >
+              ◫ View Analytics
+            </button>
+
+            <button
+              onClick={() =>
+                onNavigate("reports")
+              }
+            >
+              ▤ Generate Report
+            </button>
+          </div>
+        </Panel>
+      </>
+    );
+  }
+
+  /* =====================================================
+     COMMANDER
+     ===================================================== */
+
+  if (role === "commander") {
+    const regionalInventory =
+      inventory.filter(
+        (item) =>
+          item.location ===
+            "Base Alpha" ||
+          item.location ===
+            "Base Bravo"
+      );
+
+    const regionalCritical =
+      regionalInventory.filter(
+        (item) =>
+          item.status === "Critical"
+      );
+
+    const regionalHealth =
+      regionalInventory.length > 0
+        ? Math.round(
+            (regionalInventory.filter(
+              (item) =>
+                item.status ===
+                "Healthy"
+            ).length /
+              regionalInventory.length) *
+              100
+          )
+        : 0;
+
+    return (
+      <>
+        <div className="kpi-grid">
+          <KPI
+            label="Regional Missions"
+            value="14"
+            change="+5.8%"
+            positive
+            icon="◉"
+          />
+
+          <KPI
+            label="Regional Readiness"
+            value={`${regionalHealth}%`}
+            change="+3.4%"
+            positive
+            icon="▣"
+          />
+
+          <KPI
+            label="Active Routes"
+            value={String(
+              activeRoutes.length
+            )}
+            change="+1"
+            positive
+            icon="⌁"
+          />
+
+          <KPI
+            label="Regional Alerts"
+            value={String(
+              activeAlerts.length
+            )}
+            change={
+              highAlerts.length > 0
+                ? "Review required"
+                : "Stable"
+            }
+            positive={
+              highAlerts.length === 0
+            }
+            icon="!"
+          />
+        </div>
+
+        <div className="dashboard-grid two-column">
+          <Panel
+            title="Regional Operations Map"
+            subtitle="Current commander-area logistics movement"
+          >
+            <div className="network-map">
+              <div className="map-grid" />
+
+              <div className="map-node node-a">
+                <strong>HQ</strong>
+                <span>Command</span>
+              </div>
+
+              <div className="map-node node-b">
+                <strong>Alpha</strong>
+                <span>Active</span>
+              </div>
+
+              <div className="map-node node-c">
+                <strong>Bravo</strong>
+                <span>Delayed</span>
+              </div>
+
+              <div className="map-node node-d">
+                <strong>Charlie</strong>
+                <span>Support</span>
+              </div>
+
+              <div className="route-line line-1" />
+              <div className="route-line line-2" />
+              <div className="route-line line-3" />
+            </div>
+
+            <button
+              className="secondary-button compact"
+              onClick={() =>
+                onNavigate("routes")
+              }
+            >
+              Monitor Regional Routes →
+            </button>
+          </Panel>
+
+          <Panel
+            title="Command Alerts"
+            subtitle="Alerts requiring commander attention"
+          >
+            <div className="alert-list">
+              {activeAlerts
+                .slice(0, 4)
+                .map((alert) => (
+                  <div
+                    className="alert-row"
+                    key={alert.id}
+                  >
+                    <div
+                      className={`severity-dot ${alert.severity.toLowerCase()}`}
+                    />
+
+                    <div className="alert-content">
+                      <strong>
+                        {alert.title}
+                      </strong>
+
+                      <span>
+                        {alert.location} •{" "}
+                        {alert.time}
+                      </span>
+                    </div>
+
+                    <span className="status-pill">
+                      {alert.severity}
+                    </span>
+                  </div>
+                ))}
+            </div>
+
+            <button
+              className="secondary-button compact"
+              onClick={() =>
+                onNavigate("alerts")
+              }
+            >
+              Open Command Alerts →
+            </button>
+          </Panel>
+        </div>
+
+        <div className="dashboard-grid two-column">
+          <Panel
+            title="Regional Inventory"
+            subtitle="Priority supplies across assigned bases"
+          >
+            <div className="readiness-list">
+              {regionalInventory.map(
+                (item) => {
+                  const percentage =
+                    Math.min(
+                      100,
+                      Math.round(
+                        (item.stock /
+                          item.min) *
+                          100
+                      )
+                    );
+
+                  return (
+                    <div
+                      className="readiness-item"
+                      key={item.id}
+                    >
+                      <div className="readiness-header">
+                        <strong>
+                          {item.item}
+                        </strong>
+
+                        <span>
+                          {item.location}
+                        </span>
+                      </div>
+
+                      <div className="progress">
+                        <div
+                          className="progress-bar"
+                          style={{
+                            width: `${percentage}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  );
+                }
+              )}
+            </div>
+
+            {regionalCritical.length >
+              0 && (
+              <div className="route-meta">
+                <span>
+                  ⚠{" "}
+                  {
+                    regionalCritical.length
+                  } critical supply item
+                  {regionalCritical.length >
+                  1
+                    ? "s"
+                    : ""}
+                </span>
+              </div>
+            )}
+
+            <button
+              className="secondary-button compact"
+              onClick={() =>
+                onNavigate("inventory")
+              }
+            >
+              Review Regional Inventory →
+            </button>
+          </Panel>
+
+          <Panel
+            title="Mission Performance"
+            subtitle="Regional logistics performance"
+          >
+            <TrendChart />
+
+            <div className="route-meta">
+              <span>
+                Active:{" "}
+                <strong>
+                  {activeRoutes.length}
+                </strong>
+              </span>
+
+              <span>
+                Delayed:{" "}
+                <strong>
+                  {delayedRoutes.length}
+                </strong>
+              </span>
+
+              <span>
+                Blocked:{" "}
+                <strong>
+                  {blockedRoutes.length}
+                </strong>
+              </span>
+            </div>
+          </Panel>
+        </div>
+
+        <Panel
+          title="Commander Actions"
+          subtitle="Regional command and coordination controls"
+        >
+          <div className="quick-actions">
+            <button
+              onClick={() =>
+                onNavigate("routes")
+              }
+            >
+              ⌁ Monitor Routes
+            </button>
+
+            <button
+              onClick={() =>
+                onNavigate("alerts")
+              }
+            >
+              ! Review Risks
+            </button>
+
+            <button
+              onClick={() =>
+                onNavigate("forecast")
+              }
+            >
+              ◒ Check Forecast
+            </button>
+
+            <button
+              onClick={() =>
+                onNavigate("reports")
+              }
+            >
+              ▤ Command Report
+            </button>
+          </div>
+        </Panel>
+      </>
+    );
+  }
+
+  /* =====================================================
+     CAPTAIN
+     ===================================================== */
+
+  const fieldInventory =
+    inventory.filter(
+      (item) =>
+        item.location ===
+        "Base Alpha"
+    );
+
+  const fieldRoutes =
+    routes.filter(
+      (route) =>
+        route.destination ===
+          "Base Alpha" ||
+        route.origin ===
+          "Base Alpha"
+    );
+
+  const fieldAlerts =
+    alerts.filter(
+      (alert) =>
+        alert.location ===
+          "Base Alpha" ||
+        alert.location ===
+          "Route Alpha-01"
+    );
+
+  const fieldHealthy =
+    fieldInventory.filter(
+      (item) =>
+        item.status ===
+        "Healthy"
+    );
+
+  const fieldLow =
+    fieldInventory.filter(
+      (item) =>
+        item.status === "Low"
+    );
+
+  const fieldCritical =
+    fieldInventory.filter(
+      (item) =>
+        item.status ===
+        "Critical"
+    );
+
+  const fieldActiveAlerts =
+    fieldAlerts.filter(
+      (alert) =>
+        !alert.resolved
+    );
 
   return (
     <>
       <div className="kpi-grid">
         <KPI
-          label="Active Operations"
-          value="24"
-          change="+8.4%"
-          positive
-          icon="◉"
-        />
-
-        <KPI
-          label="Inventory Health"
-          value="87%"
-          change="+4.2%"
+          label="Assigned Supplies"
+          value={String(
+            fieldInventory.length
+          )}
+          change="+2"
           positive
           icon="▣"
         />
 
         <KPI
-          label="Active Routes"
-          value={String(
-            routes.filter((r) => r.status === "Active").length
-          )}
-          change="+2"
+          label="Field Stock Health"
+          value={`${Math.round(
+            (fieldHealthy.length /
+              Math.max(
+                fieldInventory.length,
+                1
+              )) *
+              100
+          )}%`}
+          change="+4.1%"
           positive
+          icon="◉"
+        />
+
+        <KPI
+          label="Assigned Routes"
+          value={String(
+            fieldRoutes.length
+          )}
+          change={
+            fieldRoutes.some(
+              (r) =>
+                r.status !==
+                "Active"
+            )
+              ? "Attention"
+              : "Stable"
+          }
+          positive={
+            !fieldRoutes.some(
+              (r) =>
+                r.status !==
+                "Active"
+            )
+          }
           icon="⌁"
         />
 
         <KPI
-          label="Risk Alerts"
-          value={String(activeAlerts.length)}
+          label="Field Alerts"
+          value={String(
+            fieldActiveAlerts.length
+          )}
           change={
-            critical.length > 0
-              ? "Action needed"
-              : "Stable"
+            fieldCritical.length >
+            0
+              ? "Supply action needed"
+              : "Monitor"
           }
-          positive={critical.length === 0}
+          positive={
+            fieldCritical.length === 0
+          }
           icon="!"
         />
       </div>
 
       <div className="dashboard-grid two-column">
         <Panel
-          title="Operational Network"
-          subtitle="Current synthetic network status"
+          title="Field Supply Status"
+          subtitle="Your assigned field inventory"
         >
-          <div className="network-map">
-            <div className="map-grid" />
+          <div className="readiness-list">
+            {fieldInventory.map(
+              (item) => {
+                const percentage =
+                  Math.min(
+                    100,
+                    Math.round(
+                      (item.stock /
+                        item.min) *
+                        100
+                    )
+                  );
 
-            <div className="map-node node-a">
-              <span />
-              Base Alpha
-            </div>
+                return (
+                  <div
+                    className="readiness-item"
+                    key={item.id}
+                  >
+                    <div className="readiness-header">
+                      <strong>
+                        {item.item}
+                      </strong>
 
-            <div className="map-node node-b">
-              <span />
-              Base Bravo
-            </div>
+                      <span>
+                        {item.status}
+                      </span>
+                    </div>
 
-            <div className="map-node node-c">
-              <span />
-              Base Charlie
-            </div>
+                    <div className="progress">
+                      <div
+                        className="progress-bar"
+                        style={{
+                          width: `${percentage}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                );
+              }
+            )}
+          </div>
 
-            <div className="map-node node-d">
-              <span />
-              Central Depot
-            </div>
+          <div className="route-meta">
+            <span>
+              Healthy:{" "}
+              <strong>
+                {fieldHealthy.length}
+              </strong>
+            </span>
 
-            <div className="route-line line-1" />
-            <div className="route-line line-2" />
-            <div className="route-line line-3" />
+            <span>
+              Low:{" "}
+              <strong>
+                {fieldLow.length}
+              </strong>
+            </span>
+
+            <span>
+              Critical:{" "}
+              <strong>
+                {fieldCritical.length}
+              </strong>
+            </span>
           </div>
 
           <button
-            type="button"
-            className="secondary-button"
-            onClick={() => onNavigate("routes")}
+            className="secondary-button compact"
+            onClick={() =>
+              onNavigate("inventory")
+            }
           >
-            Open Route Intelligence →
+            Open Field Inventory →
           </button>
         </Panel>
 
         <Panel
-          title="Priority Alerts"
-          subtitle="Issues requiring attention"
+          title="My Assigned Routes"
+          subtitle="Current field transportation tasks"
         >
           <div className="alert-list">
-            {activeAlerts.slice(0, 4).map((alert) => (
-              <div className="alert-row" key={alert.id}>
+            {fieldRoutes.map(
+              (route) => (
                 <div
-                  className={`severity-dot ${alert.severity.toLowerCase()}`}
-                />
+                  className="alert-row"
+                  key={route.id}
+                >
+                  <div
+                    className={`severity-dot ${
+                      route.risk ===
+                      "High"
+                        ? "critical"
+                        : route.risk ===
+                          "Medium"
+                        ? "high"
+                        : "low"
+                    }`}
+                  />
 
-                <div className="alert-content">
-                  <strong>{alert.title}</strong>
-                  <span>
-                    {alert.location} · {alert.time}
+                  <div className="alert-content">
+                    <strong>
+                      {route.name}
+                    </strong>
+
+                    <span>
+                      {route.origin} →{" "}
+                      {
+                        route.destination
+                      }
+                    </span>
+                  </div>
+
+                  <span className="status-pill">
+                    {route.status}
                   </span>
                 </div>
-
-                <span
-                  className={`status-pill ${alert.severity.toLowerCase()}`}
-                >
-                  {alert.severity}
-                </span>
-              </div>
-            ))}
+              )
+            )}
           </div>
 
           <button
-            type="button"
-            className="secondary-button"
-            onClick={() => onNavigate("alerts")}
+            className="secondary-button compact"
+            onClick={() =>
+              onNavigate("routes")
+            }
           >
-            View All Alerts →
+            Open Field Routes →
           </button>
         </Panel>
       </div>
 
       <div className="dashboard-grid two-column">
         <Panel
-          title="7-Day Logistics Trend"
-          subtitle="Synthetic shipment performance"
+          title="Field Alerts"
+          subtitle="Issues affecting your assigned area"
         >
-          <TrendChart />
-        </Panel>
+          <div className="alert-list">
+            {fieldActiveAlerts.length ===
+            0 ? (
+              <div className="alert-row">
+                <div className="alert-content">
+                  <strong>
+                    No active field alerts
+                  </strong>
 
-        <Panel
-          title="Inventory Readiness"
-          subtitle="Current stock availability"
-        >
-          <div className="readiness-list">
-            {inventory.slice(0, 5).map((item) => {
-              const percentage = Math.min(
-                100,
-                Math.round((item.stock / item.min) * 100)
-              );
-
-              return (
-                <div
-                  className="readiness-item"
-                  key={item.id}
-                >
-                  <div className="readiness-header">
-                    <span>{item.item}</span>
-                    <strong>{percentage}%</strong>
-                  </div>
-
-                  <div className="progress">
-                    <div
-                      className={`progress-bar ${item.status.toLowerCase()}`}
-                      style={{
-                        width: `${Math.min(
-                          100,
-                          percentage
-                        )}%`,
-                      }}
-                    />
-                  </div>
+                  <span>
+                    Current field operations
+                    are stable.
+                  </span>
                 </div>
-              );
-            })}
+              </div>
+            ) : (
+              fieldActiveAlerts
+                .slice(0, 4)
+                .map((alert) => (
+                  <div
+                    className="alert-row"
+                    key={alert.id}
+                  >
+                    <div
+                      className={`severity-dot ${alert.severity.toLowerCase()}`}
+                    />
+
+                    <div className="alert-content">
+                      <strong>
+                        {alert.title}
+                      </strong>
+
+                      <span>
+                        {alert.location} •{" "}
+                        {alert.time}
+                      </span>
+                    </div>
+
+                    <span className="status-pill">
+                      {alert.severity}
+                    </span>
+                  </div>
+                ))
+            )}
           </div>
 
           <button
-            type="button"
-            className="secondary-button"
-            onClick={() => onNavigate("inventory")}
+            className="secondary-button compact"
+            onClick={() =>
+              onNavigate("alerts")
+            }
           >
-            Open Inventory →
+            View Field Alerts →
           </button>
+        </Panel>
+
+        <Panel
+          title="Field Operations Trend"
+          subtitle="Recent synthetic delivery performance"
+        >
+          <TrendChart />
+
+          <div className="route-meta">
+            <span>
+              Field Routes:{" "}
+              <strong>
+                {fieldRoutes.length}
+              </strong>
+            </span>
+
+            <span>
+              Active Alerts:{" "}
+              <strong>
+                {fieldActiveAlerts.length}
+              </strong>
+            </span>
+          </div>
         </Panel>
       </div>
 
       <Panel
-        title={`${roleMeta[role].title} Quick Actions`}
-        subtitle="Frequently used operational controls"
+        title="Captain Quick Actions"
+        subtitle="Field-level operational controls"
       >
         <div className="quick-actions">
           <button
-            type="button"
-            onClick={() => onNavigate("inventory")}
+            onClick={() =>
+              onNavigate("requests")
+            }
           >
-            <span>▣</span>
-            Check Inventory
+            + Create Supply Request
           </button>
 
           <button
-            type="button"
-            onClick={() => onNavigate("routes")}
+            onClick={() =>
+              onNavigate("inventory")
+            }
           >
-            <span>⌁</span>
-            Monitor Routes
+            ▣ Check My Inventory
           </button>
 
           <button
-            type="button"
-            onClick={() => onNavigate("forecast")}
+            onClick={() =>
+              onNavigate("routes")
+            }
           >
-            <span>◒</span>
-            Demand Forecast
+            ⌁ Check My Routes
           </button>
 
           <button
-            type="button"
-            onClick={() => onNavigate("reports")}
+            onClick={() =>
+              onNavigate("alerts")
+            }
           >
-            <span>▤</span>
-            Generate Report
+            ! Report / View Alert
           </button>
         </div>
       </Panel>
     </>
   );
 }
+
+/* =========================================================
+   COMMON COMPONENTS
+   ========================================================= */
 
 function KPI({
   label,
@@ -896,17 +1711,21 @@ function KPI({
     <div className="kpi-card">
       <div className="kpi-top">
         <span>{label}</span>
-        <div className="kpi-icon">{icon}</div>
+        <strong>{icon}</strong>
       </div>
 
-      <strong>{value}</strong>
+      <div className="kpi-value">
+        {value}
+      </div>
 
       <div
         className={`kpi-change ${
-          positive ? "positive" : "negative"
+          positive
+            ? "positive"
+            : "negative"
         }`}
       >
-        {positive ? "↑" : "↓"} {change}
+        {change}
       </div>
     </div>
   );
@@ -926,175 +1745,92 @@ function Panel({
       <div className="panel-header">
         <div>
           <h2>{title}</h2>
-          {subtitle && <p>{subtitle}</p>}
+
+          {subtitle && (
+            <p>{subtitle}</p>
+          )}
         </div>
       </div>
 
-      <div className="panel-body">{children}</div>
+      <div className="panel-body">
+        {children}
+      </div>
     </section>
   );
 }
 
+/* =========================================================
+   SUPPLY CHAIN
+   ========================================================= */
+
 function SupplyChain({
   inventory,
   routes,
-  alerts,
 }: {
   inventory: InventoryItem[];
   routes: RouteItem[];
-  alerts: AlertItem[];
 }) {
-  const healthyInventory = inventory.filter(
-    (i) => i.status === "Healthy"
-  ).length;
-
-  const activeRoutes = routes.filter(
-    (r) => r.status === "Active"
-  ).length;
-
-  const unresolvedAlerts = alerts.filter(
-    (a) => !a.resolved
-  ).length;
-
   return (
-    <>
-      <div className="kpi-grid">
-        <KPI
-          label="Supply Availability"
-          value="91%"
-          change="+5.1%"
-          positive
-          icon="◉"
-        />
-
-        <KPI
-          label="Healthy Inventory"
-          value={`${healthyInventory}/${inventory.length}`}
-          change="+2 items"
-          positive
-          icon="▣"
-        />
-
-        <KPI
-          label="Active Shipments"
-          value="18"
-          change="+12%"
-          positive
-          icon="⇄"
-        />
-
-        <KPI
-          label="Network Risks"
-          value={String(unresolvedAlerts)}
-          change="Monitor"
-          positive={unresolvedAlerts < 3}
-          icon="!"
-        />
-      </div>
-
+    <div className="dashboard-grid">
       <Panel
-        title="End-to-End Supply Flow"
-        subtitle="Synthetic movement of supplies"
+        title="Supply Chain Pipeline"
+        subtitle="Synthetic end-to-end supply movement"
       >
-        <div className="supply-flow">
+        <div className="quick-actions">
           <FlowBox
             title="Central Depot"
-            value="1,840 units"
+            value={`${inventory.length} items`}
           />
-
-          <div className="flow-arrow">→</div>
 
           <FlowBox
-            title="Regional Hub"
-            value="1,520 units"
+            title="In Transit"
+            value={`${routes.length} routes`}
           />
-
-          <div className="flow-arrow">→</div>
 
           <FlowBox
             title="Field Bases"
-            value="1,240 units"
+            value="3 Bases"
           />
 
-          <div className="flow-arrow">→</div>
-
           <FlowBox
-            title="Field Units"
-            value="920 units"
+            title="Delivered"
+            value="92%"
           />
         </div>
       </Panel>
 
-      <div className="dashboard-grid two-column">
-        <Panel
-          title="Supply Performance"
-          subtitle="Category-wise status"
-        >
-          <div className="metric-list">
-            <MetricRow
-              label="Food"
-              value="94%"
-              percentage={94}
-            />
-            <MetricRow
-              label="Medical"
-              value="71%"
-              percentage={71}
-            />
-            <MetricRow
-              label="Fuel"
-              value="62%"
-              percentage={62}
-            />
-            <MetricRow
-              label="Water"
-              value="98%"
-              percentage={98}
-            />
-            <MetricRow
-              label="Relief"
-              value="79%"
-              percentage={79}
-            />
-          </div>
-        </Panel>
+      <Panel
+        title="Supply Movement"
+        subtitle="Current logistics flow"
+      >
+        <div className="alert-list">
+          {routes.map((route) => (
+            <div
+              className="alert-row"
+              key={route.id}
+            >
+              <div className="alert-content">
+                <strong>
+                  {route.name}
+                </strong>
 
-        <Panel
-          title="Logistics Pipeline"
-          subtitle={`${activeRoutes} routes currently active`}
-        >
-          <div className="pipeline">
-            <PipelineItem
-              title="Orders Received"
-              value="42"
-              status="Complete"
-            />
-            <PipelineItem
-              title="Orders Processing"
-              value="17"
-              status="Active"
-            />
-            <PipelineItem
-              title="In Transit"
-              value="12"
-              status="Active"
-            />
-            <PipelineItem
-              title="Delivered Today"
-              value="28"
-              status="Complete"
-            />
-          </div>
-        </Panel>
-      </div>
-    </>
+                <span>
+                  {route.origin} →{" "}
+                  {route.destination}
+                </span>
+              </div>
+
+              <span className="status-pill">
+                {route.status}
+              </span>
+            </div>
+          ))}
+        </div>
+      </Panel>
+    </div>
   );
 }
 
-/*
-  FIX FOR VERCEL ERROR:
-  FlowBox was being used without being defined.
-*/
 function FlowBox({
   title,
   value,
@@ -1103,89 +1839,29 @@ function FlowBox({
   value: string;
 }) {
   return (
-    <div className="flow-step">
-      <span className="flow-number">●</span>
-      <strong>{title}</strong>
-      <span>Supply movement</span>
-      <b>{value}</b>
-    </div>
-  );
-}
-
-function FlowStep({
-  number,
-  title,
-  text,
-  value,
-}: {
-  number: string;
-  title: string;
-  text: string;
-  value: string;
-}) {
-  return (
-    <div className="flow-step">
-      <span className="flow-number">{number}</span>
-      <strong>{title}</strong>
-      <span>{text}</span>
-      <b>{value}</b>
-    </div>
-  );
-}
-
-function PipelineItem({
-  title,
-  value,
-  status,
-}: {
-  title: string;
-  value: string;
-  status: string;
-}) {
-  return (
-    <div className="pipeline-item">
-      <div>
+    <div className="dashboard-panel">
+      <div className="panel-body">
         <strong>{title}</strong>
-        <span>{status}</span>
-      </div>
-
-      <b>{value}</b>
-    </div>
-  );
-}
-
-function MetricRow({
-  label,
-  value,
-  percentage,
-}: {
-  label: string;
-  value: string;
-  percentage: number;
-}) {
-  return (
-    <div className="metric-row">
-      <div className="metric-header">
-        <span>{label}</span>
-        <strong>{value}</strong>
-      </div>
-
-      <div className="progress">
-        <div
-          className="progress-bar"
-          style={{ width: `${percentage}%` }}
-        />
+        <p>{value}</p>
       </div>
     </div>
   );
 }
+
+/* =========================================================
+   INVENTORY
+   ========================================================= */
 
 function InventoryPage({
   inventory,
-  onRefresh,
+  setInventory,
+  showMessage,
 }: {
   inventory: InventoryItem[];
-  onRefresh: () => void;
+  setInventory: React.Dispatch<
+    React.SetStateAction<InventoryItem[]>
+  >;
+  showMessage: (text: string) => void;
 }) {
   const healthy = inventory.filter(
     (i) => i.status === "Healthy"
@@ -1199,13 +1875,32 @@ function InventoryPage({
     (i) => i.status === "Critical"
   ).length;
 
+  function refreshInventory() {
+    setInventory((current) =>
+      current.map((item) => ({
+        ...item,
+        stock:
+          item.stock +
+          Math.floor(
+            Math.random() * 20
+          ),
+      }))
+    );
+
+    showMessage(
+      "Inventory refreshed successfully."
+    );
+  }
+
   return (
     <>
       <div className="kpi-grid">
         <KPI
           label="Total Items"
-          value={String(inventory.length)}
-          change="Tracked"
+          value={String(
+            inventory.length
+          )}
+          change="Stable"
           positive
           icon="▣"
         />
@@ -1213,7 +1908,7 @@ function InventoryPage({
         <KPI
           label="Healthy"
           value={String(healthy)}
-          change="Stable"
+          change="Good"
           positive
           icon="✓"
         />
@@ -1221,80 +1916,82 @@ function InventoryPage({
         <KPI
           label="Low Stock"
           value={String(low)}
-          change="Replenish"
-          positive={false}
+          change={
+            low > 0
+              ? "Attention"
+              : "Stable"
+          }
+          positive={low === 0}
           icon="!"
         />
 
         <KPI
           label="Critical"
           value={String(critical)}
-          change="Immediate action"
-          positive={false}
+          change={
+            critical > 0
+              ? "Urgent"
+              : "Stable"
+          }
+          positive={critical === 0}
           icon="⚠"
         />
       </div>
 
       <Panel
-        title="Inventory Control Center"
-        subtitle="Synthetic inventory dataset"
+        title="Inventory Table"
+        subtitle="Synthetic stock data"
       >
-        <div className="table-toolbar">
-          <span>{inventory.length} tracked items</span>
+        <div className="alert-list">
+          {inventory.map((item) => (
+            <div
+              className="alert-row"
+              key={item.id}
+            >
+              <div className="alert-content">
+                <strong>
+                  {item.item}
+                </strong>
 
-          <button
-            type="button"
-            className="secondary-button compact"
-            onClick={onRefresh}
-          >
-            ↻ Refresh
-          </button>
+                <span>
+                  {item.category} •{" "}
+                  {item.location} •{" "}
+                  Stock: {item.stock}
+                </span>
+              </div>
+
+              <span className="status-pill">
+                {item.status}
+              </span>
+            </div>
+          ))}
         </div>
 
-        <div className="data-table-wrap">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Item</th>
-                <th>Category</th>
-                <th>Stock</th>
-                <th>Minimum</th>
-                <th>Location</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {inventory.map((item) => (
-                <tr key={item.id}>
-                  <td>
-                    <strong>{item.item}</strong>
-                  </td>
-                  <td>{item.category}</td>
-                  <td>{item.stock}</td>
-                  <td>{item.min}</td>
-                  <td>{item.location}</td>
-                  <td>
-                    <span
-                      className={`status-pill ${item.status.toLowerCase()}`}
-                    >
-                      {item.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <button
+          className="primary-button compact"
+          onClick={refreshInventory}
+        >
+          Refresh Inventory
+        </button>
       </Panel>
     </>
   );
 }
 
+/* =========================================================
+   ROUTES
+   ========================================================= */
+
 function RoutesPage({
   routes,
+  setRoutes,
+  showMessage,
 }: {
   routes: RouteItem[];
+  setRoutes: React.Dispatch<
+    React.SetStateAction<RouteItem[]>
+  >;
+  showMessage: (text: string) => void;
 }) {
   const active = routes.filter(
     (r) => r.status === "Active"
@@ -1308,13 +2005,31 @@ function RoutesPage({
     (r) => r.status === "Blocked"
   ).length;
 
+  function simulateTraffic() {
+    setRoutes((current) =>
+      current.map((route) =>
+        route.id === 2
+          ? {
+              ...route,
+              status: "Delayed",
+              risk: "High",
+            }
+          : route
+      )
+    );
+
+    showMessage(
+      "Traffic simulation applied."
+    );
+  }
+
   return (
     <>
       <div className="kpi-grid">
         <KPI
           label="Total Routes"
           value={String(routes.length)}
-          change="Monitored"
+          change="+1"
           positive
           icon="⌁"
         />
@@ -1322,7 +2037,7 @@ function RoutesPage({
         <KPI
           label="Active"
           value={String(active)}
-          change="Running"
+          change="Stable"
           positive
           icon="✓"
         />
@@ -1330,104 +2045,139 @@ function RoutesPage({
         <KPI
           label="Delayed"
           value={String(delayed)}
-          change="Attention"
-          positive={false}
+          change={
+            delayed > 0
+              ? "Attention"
+              : "Stable"
+          }
+          positive={delayed === 0}
           icon="!"
         />
 
         <KPI
           label="Blocked"
           value={String(blocked)}
-          change="Critical"
-          positive={false}
+          change={
+            blocked > 0
+              ? "Critical"
+              : "Stable"
+          }
+          positive={blocked === 0}
           icon="⚠"
         />
       </div>
 
-      <div className="dashboard-grid two-column">
-        <Panel
-          title="Route Network"
-          subtitle="Synthetic logistics map"
-        >
-          <div className="network-map large-map">
-            <div className="map-grid" />
+      <Panel
+        title="Route Intelligence"
+        subtitle="Synthetic transportation network"
+      >
+        <div className="network-map large-map">
+          <div className="map-grid" />
 
-            <div className="map-node node-a">
-              <span />
-              Central Depot
-            </div>
-
-            <div className="map-node node-b">
-              <span />
-              Base Alpha
-            </div>
-
-            <div className="map-node node-c">
-              <span />
-              Base Bravo
-            </div>
-
-            <div className="map-node node-d">
-              <span />
-              Base Charlie
-            </div>
-
-            <div className="route-line line-1" />
-            <div className="route-line line-2" />
-            <div className="route-line line-3" />
+          <div className="map-node node-a">
+            <strong>Depot</strong>
+            <span>Origin</span>
           </div>
-        </Panel>
 
-        <Panel
-          title="Route Risk"
-          subtitle="Current transportation conditions"
-        >
-          <div className="route-list">
-            {routes.map((route) => (
-              <div className="route-card" key={route.id}>
-                <div>
-                  <strong>{route.name}</strong>
-                  <span>
-                    {route.origin} → {route.destination}
-                  </span>
-                </div>
+          <div className="map-node node-b">
+            <strong>Alpha</strong>
+            <span>84 km</span>
+          </div>
 
-                <div className="route-meta">
-                  <span>{route.distance}</span>
-                  <span>{route.eta}</span>
+          <div className="map-node node-c">
+            <strong>Bravo</strong>
+            <span>126 km</span>
+          </div>
 
-                  <span
-                    className={`status-pill ${route.risk.toLowerCase()}`}
-                  >
-                    {route.risk}
-                  </span>
-                </div>
+          <div className="map-node node-d">
+            <strong>Charlie</strong>
+            <span>61 km</span>
+          </div>
+
+          <div className="route-line line-1" />
+          <div className="route-line line-2" />
+          <div className="route-line line-3" />
+        </div>
+
+        <div className="alert-list">
+          {routes.map((route) => (
+            <div
+              className="alert-row"
+              key={route.id}
+            >
+              <div
+                className={`severity-dot ${
+                  route.risk === "High"
+                    ? "critical"
+                    : route.risk ===
+                      "Medium"
+                    ? "high"
+                    : "low"
+                }`}
+              />
+
+              <div className="alert-content">
+                <strong>
+                  {route.name}
+                </strong>
+
+                <span>
+                  {route.origin} →{" "}
+                  {route.destination} •{" "}
+                  {route.distance} • ETA{" "}
+                  {route.eta}
+                </span>
               </div>
-            ))}
-          </div>
-        </Panel>
-      </div>
+
+              <span className="status-pill">
+                {route.status}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        <button
+          className="primary-button compact"
+          onClick={simulateTraffic}
+        >
+          Simulate Traffic Risk
+        </button>
+      </Panel>
     </>
   );
 }
 
+/* =========================================================
+   ALERTS
+   ========================================================= */
+
 function AlertsPage({
   alerts,
-  onResolve,
+  resolveAlert,
 }: {
   alerts: AlertItem[];
-  onResolve: (id: number) => void;
+  resolveAlert: (id: number) => void;
 }) {
   const critical = alerts.filter(
-    (a) => a.severity === "Critical" && !a.resolved
+    (a) =>
+      a.severity === "Critical" &&
+      !a.resolved
   ).length;
 
   const high = alerts.filter(
-    (a) => a.severity === "High" && !a.resolved
+    (a) =>
+      a.severity === "High" &&
+      !a.resolved
   ).length;
 
   const medium = alerts.filter(
-    (a) => a.severity === "Medium" && !a.resolved
+    (a) =>
+      a.severity === "Medium" &&
+      !a.resolved
+  ).length;
+
+  const resolved = alerts.filter(
+    (a) => a.resolved
   ).length;
 
   return (
@@ -1436,16 +2186,24 @@ function AlertsPage({
         <KPI
           label="Critical"
           value={String(critical)}
-          change="Immediate"
-          positive={false}
+          change={
+            critical > 0
+              ? "Urgent"
+              : "Clear"
+          }
+          positive={critical === 0}
           icon="⚠"
         />
 
         <KPI
           label="High"
           value={String(high)}
-          change="Action required"
-          positive={false}
+          change={
+            high > 0
+              ? "Review"
+              : "Clear"
+          }
+          positive={high === 0}
           icon="!"
         />
 
@@ -1454,15 +2212,13 @@ function AlertsPage({
           value={String(medium)}
           change="Monitor"
           positive
-          icon="◐"
+          icon="◉"
         />
 
         <KPI
           label="Resolved"
-          value={String(
-            alerts.filter((a) => a.resolved).length
-          )}
-          change="Completed"
+          value={String(resolved)}
+          change="+2"
           positive
           icon="✓"
         />
@@ -1470,14 +2226,12 @@ function AlertsPage({
 
       <Panel
         title="Risk Alert Center"
-        subtitle="Prioritized synthetic incidents"
+        subtitle="Prioritized operational warnings"
       >
         <div className="alert-list full-alert-list">
           {alerts.map((alert) => (
             <div
-              className={`alert-row ${
-                alert.resolved ? "resolved-row" : ""
-              }`}
+              className="alert-row"
               key={alert.id}
             >
               <div
@@ -1485,16 +2239,18 @@ function AlertsPage({
               />
 
               <div className="alert-content">
-                <strong>{alert.title}</strong>
-                <span>{alert.description}</span>
-                <small>
-                  {alert.location} · {alert.time}
-                </small>
+                <strong>
+                  {alert.title}
+                </strong>
+
+                <span>
+                  {alert.description} •{" "}
+                  {alert.location} •{" "}
+                  {alert.time}
+                </span>
               </div>
 
-              <span
-                className={`status-pill ${alert.severity.toLowerCase()}`}
-              >
+              <span className="status-pill">
                 {alert.resolved
                   ? "Resolved"
                   : alert.severity}
@@ -1502,9 +2258,12 @@ function AlertsPage({
 
               {!alert.resolved && (
                 <button
-                  type="button"
                   className="secondary-button compact"
-                  onClick={() => onResolve(alert.id)}
+                  onClick={() =>
+                    resolveAlert(
+                      alert.id
+                    )
+                  }
                 >
                   Resolve
                 </button>
@@ -1517,33 +2276,37 @@ function AlertsPage({
   );
 }
 
+/* =========================================================
+   ANALYTICS
+   ========================================================= */
+
 function AnalyticsPage({
   inventory,
   routes,
-  alerts,
 }: {
   inventory: InventoryItem[];
   routes: RouteItem[];
-  alerts: AlertItem[];
 }) {
-  const deliveryScore = 92;
+  const healthyInventory =
+    inventory.filter(
+      (i) => i.status === "Healthy"
+    ).length;
 
   const inventoryScore = Math.round(
-    (inventory.filter((i) => i.status === "Healthy").length /
-      inventory.length) *
+    (healthyInventory /
+      Math.max(inventory.length, 1)) *
       100
   );
 
-  const routeScore = Math.round(
-    (routes.filter((r) => r.status === "Active").length /
-      routes.length) *
-      100
-  );
+  const activeRoutes =
+    routes.filter(
+      (r) => r.status === "Active"
+    ).length;
 
-  const alertScore = Math.max(
-    0,
-    100 -
-      alerts.filter((a) => !a.resolved).length * 10
+  const routeReliability = Math.round(
+    (activeRoutes /
+      Math.max(routes.length, 1)) *
+      100
   );
 
   return (
@@ -1551,16 +2314,16 @@ function AnalyticsPage({
       <div className="kpi-grid">
         <KPI
           label="Operational Score"
-          value="89"
-          change="+6.8%"
+          value="89%"
+          change="+5.2%"
           positive
-          icon="◫"
+          icon="◉"
         />
 
         <KPI
           label="Delivery Efficiency"
-          value={`${deliveryScore}%`}
-          change="+4.1%"
+          value="92%"
+          change="+3.8%"
           positive
           icon="⇄"
         />
@@ -1568,15 +2331,15 @@ function AnalyticsPage({
         <KPI
           label="Inventory Score"
           value={`${inventoryScore}%`}
-          change="+3.5%"
+          change="+4.1%"
           positive
           icon="▣"
         />
 
         <KPI
           label="Route Reliability"
-          value={`${routeScore}%`}
-          change="+2.9%"
+          value={`${routeReliability}%`}
+          change="+2.6%"
           positive
           icon="⌁"
         />
@@ -1584,585 +2347,361 @@ function AnalyticsPage({
 
       <div className="dashboard-grid two-column">
         <Panel
-          title="Performance Analytics"
-          subtitle="Seven-day operational performance"
+          title="Performance Trend"
+          subtitle="Synthetic operational trend"
         >
-          <div className="bar-chart">
-            {[72, 78, 74, 84, 82, 91, 89].map(
-              (value, index) => (
-                <div className="bar-column" key={index}>
-                  <div
-                    className="bar"
-                    style={{ height: `${value}%` }}
-                  />
-
-                  <span>
-                    {["M", "T", "W", "T", "F", "S", "S"][
-                      index
-                    ]}
-                  </span>
-                </div>
-              )
-            )}
-          </div>
+          <TrendChart />
         </Panel>
 
         <Panel
-          title="KPI Breakdown"
-          subtitle="Current operational health"
+          title="AI Insights"
+          subtitle="Synthetic intelligence recommendations"
         >
-          <MetricRow
-            label="Delivery Efficiency"
-            value="92%"
-            percentage={92}
-          />
+          <div className="alert-list">
+            <div className="alert-row">
+              <div className="alert-content">
+                <strong>
+                  Fuel replenishment recommended
+                </strong>
 
-          <MetricRow
-            label="Inventory Readiness"
-            value={`${inventoryScore}%`}
-            percentage={inventoryScore}
-          />
+                <span>
+                  Diesel stock at Base Bravo
+                  is below threshold.
+                </span>
+              </div>
+            </div>
 
-          <MetricRow
-            label="Route Reliability"
-            value={`${routeScore}%`}
-            percentage={routeScore}
-          />
+            <div className="alert-row">
+              <div className="alert-content">
+                <strong>
+                  Medical demand increasing
+                </strong>
 
-          <MetricRow
-            label="Alert Resolution"
-            value={`${alertScore}%`}
-            percentage={alertScore}
-          />
+                <span>
+                  Forecast suggests
+                  additional medical kits.
+                </span>
+              </div>
+            </div>
+
+            <div className="alert-row">
+              <div className="alert-content">
+                <strong>
+                  Route Bravo requires monitoring
+                </strong>
+
+                <span>
+                  High-risk delayed route
+                  detected.
+                </span>
+              </div>
+            </div>
+          </div>
         </Panel>
       </div>
-
-      <Panel
-        title="AI Insights"
-        subtitle="Synthetic intelligence-generated observations"
-      >
-        <div className="insight-grid">
-          <Insight
-            icon="↗"
-            title="Delivery improving"
-            text="Average delivery efficiency increased over the last seven days."
-          />
-
-          <Insight
-            icon="!"
-            title="Fuel requires attention"
-            text="Fuel inventory is below the preferred operational threshold."
-          />
-
-          <Insight
-            icon="⌁"
-            title="Route Bravo risk"
-            text="Weather and congestion may increase travel time."
-          />
-        </div>
-      </Panel>
     </>
   );
 }
 
-function Insight({
-  icon,
-  title,
-  text,
-}: {
-  icon: string;
-  title: string;
-  text: string;
-}) {
-  return (
-    <div className="insight-card">
-      <div className="insight-icon">{icon}</div>
-
-      <div>
-        <strong>{title}</strong>
-        <p>{text}</p>
-      </div>
-    </div>
-  );
-}
+/* =========================================================
+   FORECAST
+   ========================================================= */
 
 function ForecastPage() {
   const forecast = [
     {
       item: "Rice",
       current: 820,
-      predicted: 620,
-      confidence: 94,
+      forecast: 760,
+      recommendation: "Maintain",
     },
     {
       item: "Medical Kits",
       current: 140,
-      predicted: 240,
-      confidence: 91,
+      forecast: 230,
+      recommendation: "Increase",
     },
     {
       item: "Diesel",
       current: 92,
-      predicted: 210,
-      confidence: 96,
+      forecast: 180,
+      recommendation: "Urgent",
     },
     {
       item: "Water",
       current: 670,
-      predicted: 540,
-      confidence: 89,
+      forecast: 620,
+      recommendation: "Maintain",
     },
     {
       item: "Blankets",
       current: 180,
-      predicted: 360,
-      confidence: 86,
+      forecast: 310,
+      recommendation: "Increase",
     },
   ];
 
   return (
-    <>
-      <div className="kpi-grid">
-        <KPI
-          label="Forecast Accuracy"
-          value="94.2%"
-          change="+2.8%"
-          positive
-          icon="◒"
-        />
+    <Panel
+      title="AI Demand Forecast"
+      subtitle="Synthetic 7-day demand prediction"
+    >
+      <div className="alert-list">
+        {forecast.map((item) => (
+          <div
+            className="alert-row"
+            key={item.item}
+          >
+            <div className="alert-content">
+              <strong>
+                {item.item}
+              </strong>
 
-        <KPI
-          label="7-Day Demand"
-          value="4,820"
-          change="+11.4%"
-          positive
-          icon="↗"
-        />
-
-        <KPI
-          label="Replenishment"
-          value="8"
-          change="Items required"
-          positive={false}
-          icon="!"
-        />
-
-        <KPI
-          label="Confidence"
-          value="91%"
-          change="High"
-          positive
-          icon="✓"
-        />
-      </div>
-
-      <Panel
-        title="Demand Forecast"
-        subtitle="Synthetic AI-style predictions"
-      >
-        <div className="forecast-list">
-          {forecast.map((item) => (
-            <div
-              className="forecast-row"
-              key={item.item}
-            >
-              <div className="forecast-name">
-                <strong>{item.item}</strong>
-                <span>
-                  Current {item.current} → Forecast{" "}
-                  {item.predicted}
-                </span>
-              </div>
-
-              <div className="forecast-bar">
-                <div
-                  className="forecast-current"
-                  style={{
-                    width: `${Math.min(
-                      100,
-                      (item.current / 900) * 100
-                    )}%`,
-                  }}
-                />
-
-                <div
-                  className="forecast-predicted"
-                  style={{
-                    width: `${Math.min(
-                      100,
-                      (item.predicted / 900) * 100
-                    )}%`,
-                  }}
-                />
-              </div>
-
-              <span className="confidence">
-                {item.confidence}%
+              <span>
+                Current: {item.current} •
+                Forecast: {item.forecast}
               </span>
             </div>
-          ))}
-        </div>
-      </Panel>
 
-      <Panel
-        title="Forecast Recommendation"
-        subtitle="Suggested operational action"
-      >
-        <div className="recommendation">
-          <div className="recommendation-icon">AI</div>
-
-          <div>
-            <strong>
-              Increase fuel and medical stock before
-              next operational cycle.
-            </strong>
-
-            <p>
-              The synthetic demand model predicts a
-              significant increase in consumption.
-            </p>
+            <span className="status-pill">
+              {item.recommendation}
+            </span>
           </div>
-        </div>
-      </Panel>
-    </>
+        ))}
+      </div>
+    </Panel>
   );
 }
+
+/* =========================================================
+   SCENARIOS
+   ========================================================= */
 
 function ScenarioPage({
   showMessage,
 }: {
-  showMessage: (message: string) => void;
+  showMessage: (text: string) => void;
 }) {
-  const [result, setResult] = useState("");
-
   const scenarios = [
     {
-      id: 1,
-      title: "Fuel Shortage",
-      description:
-        "Simulate a 35% reduction in available fuel.",
+      name: "Fuel Shortage",
       impact: "High",
-      effect: "-18% route capacity",
+      effect:
+        "Routes may experience 20% delay.",
     },
     {
-      id: 2,
-      title: "Heavy Rainfall",
-      description:
-        "Simulate major weather disruption.",
+      name: "Heavy Rainfall",
       impact: "Medium",
-      effect: "+42 min average ETA",
+      effect:
+        "Northern routes may become risky.",
     },
     {
-      id: 3,
-      title: "Demand Surge",
-      description:
-        "Simulate 40% increase in field demand.",
+      name: "Demand Surge",
       impact: "High",
-      effect: "+31% inventory consumption",
+      effect:
+        "Medical and food stock may decrease rapidly.",
     },
   ];
 
-  function simulate(title: string) {
-    setResult(
-      `${title}: synthetic simulation completed.`
-    );
+  return (
+    <Panel
+      title="Scenario Simulation"
+      subtitle="Test possible logistics disruptions"
+    >
+      <div className="alert-list">
+        {scenarios.map((scenario) => (
+          <div
+            className="alert-row"
+            key={scenario.name}
+          >
+            <div className="alert-content">
+              <strong>
+                {scenario.name}
+              </strong>
 
-    showMessage("Scenario simulation completed.");
+              <span>
+                {scenario.effect}
+              </span>
+            </div>
+
+            <span className="status-pill">
+              {scenario.impact}
+            </span>
+
+            <button
+              className="secondary-button compact"
+              onClick={() =>
+                showMessage(
+                  `${scenario.name} simulation completed.`
+                )
+              }
+            >
+              Simulate
+            </button>
+          </div>
+        ))}
+      </div>
+    </Panel>
+  );
+}
+
+/* =========================================================
+   REPORTS
+   ========================================================= */
+
+function ReportsPage({
+  showMessage,
+}: {
+  showMessage: (text: string) => void;
+}) {
+  const reports = [
+    "Daily Logistics Report",
+    "Inventory Health Report",
+    "Route Risk Report",
+    "Weekly Command Summary",
+  ];
+
+  return (
+    <Panel
+      title="Reports"
+      subtitle="Generate operational intelligence reports"
+    >
+      <div className="quick-actions">
+        {reports.map((report) => (
+          <button
+            key={report}
+            onClick={() =>
+              showMessage(
+                `${report} generated successfully.`
+              )
+            }
+          >
+            ▤ {report}
+          </button>
+        ))}
+      </div>
+    </Panel>
+  );
+}
+
+/* =========================================================
+   MANAGE SYSTEM
+   ========================================================= */
+
+function ManageSystem({
+  inventory,
+  routes,
+  alerts,
+  setInventory,
+  setRoutes,
+  setAlerts,
+  showMessage,
+}: {
+  inventory: InventoryItem[];
+  routes: RouteItem[];
+  alerts: AlertItem[];
+  setInventory: React.Dispatch<
+    React.SetStateAction<InventoryItem[]>
+  >;
+  setRoutes: React.Dispatch<
+    React.SetStateAction<RouteItem[]>
+  >;
+  setAlerts: React.Dispatch<
+    React.SetStateAction<AlertItem[]>
+  >;
+  showMessage: (text: string) => void;
+}) {
+  function resetDemo() {
+    setInventory(initialInventory);
+    setRoutes(initialRoutes);
+    setAlerts(initialAlerts);
+
+    showMessage(
+      "Demo system data reset successfully."
+    );
   }
 
   return (
     <>
       <div className="kpi-grid">
         <KPI
-          label="Scenarios Available"
-          value="12"
-          change="Synthetic"
-          positive
-          icon="◇"
-        />
-
-        <KPI
-          label="High Impact"
-          value="4"
-          change="Review"
-          positive={false}
-          icon="!"
-        />
-
-        <KPI
-          label="Simulations Today"
-          value="18"
-          change="+6"
-          positive
-          icon="↗"
-        />
-
-        <KPI
-          label="Preparedness"
-          value="86%"
-          change="+5%"
-          positive
-          icon="✓"
-        />
-      </div>
-
-      <div className="scenario-grid">
-        {scenarios.map((scenario) => (
-          <div
-            className="scenario-card"
-            key={scenario.id}
-          >
-            <div className="scenario-icon">◇</div>
-
-            <span
-              className={`status-pill ${scenario.impact.toLowerCase()}`}
-            >
-              {scenario.impact} impact
-            </span>
-
-            <h3>{scenario.title}</h3>
-
-            <p>{scenario.description}</p>
-
-            <div className="scenario-effect">
-              <span>Expected effect</span>
-              <strong>{scenario.effect}</strong>
-            </div>
-
-            <button
-              type="button"
-              className="primary-button"
-              onClick={() =>
-                simulate(scenario.title)
-              }
-            >
-              Run Simulation
-            </button>
-          </div>
-        ))}
-      </div>
-
-      {result && (
-        <Panel
-          title="Simulation Result"
-          subtitle="Latest synthetic simulation"
-        >
-          <div className="simulation-result">
-            ✓ {result}
-          </div>
-        </Panel>
-      )}
-    </>
-  );
-}
-
-function ReportsPage({
-  showMessage,
-}: {
-  showMessage: (message: string) => void;
-}) {
-  const reports = [
-    {
-      title: "Daily Logistics Report",
-      type: "Operations",
-      date: "04 Oct 2026",
-    },
-    {
-      title: "Inventory Health Report",
-      type: "Inventory",
-      date: "04 Oct 2026",
-    },
-    {
-      title: "Route Risk Report",
-      type: "Transportation",
-      date: "03 Oct 2026",
-    },
-    {
-      title: "Weekly Command Summary",
-      type: "Executive",
-      date: "02 Oct 2026",
-    },
-  ];
-
-  return (
-    <>
-      <div className="kpi-grid">
-        <KPI
-          label="Reports Available"
-          value="24"
-          change="This month"
-          positive
-          icon="▤"
-        />
-
-        <KPI
-          label="Generated Today"
-          value="6"
-          change="+2"
-          positive
-          icon="↗"
-        />
-
-        <KPI
-          label="Scheduled"
-          value="4"
-          change="Upcoming"
-          positive
-          icon="◷"
-        />
-
-        <KPI
-          label="Data Freshness"
-          value="98%"
-          change="Excellent"
-          positive
-          icon="✓"
-        />
-      </div>
-
-      <Panel
-        title="Operational Reports"
-        subtitle="Synthetic report center"
-      >
-        <div className="report-list">
-          {reports.map((report) => (
-            <div
-              className="report-row"
-              key={report.title}
-            >
-              <div className="report-icon">▤</div>
-
-              <div className="report-info">
-                <strong>{report.title}</strong>
-
-                <span>
-                  {report.type} · {report.date}
-                </span>
-              </div>
-
-              <button
-                type="button"
-                className="secondary-button compact"
-                onClick={() =>
-                  showMessage(
-                    `${report.title} generated successfully.`
-                  )
-                }
-              >
-                Generate
-              </button>
-            </div>
-          ))}
-        </div>
-      </Panel>
-    </>
-  );
-}
-
-function ManageSystem({
-  inventory,
-  routes,
-  alerts,
-  criticalInventory,
-  delayedRoutes,
-  onReset,
-}: {
-  inventory: InventoryItem[];
-  routes: RouteItem[];
-  alerts: AlertItem[];
-  criticalInventory: number;
-  delayedRoutes: number;
-  onReset: () => void;
-}) {
-  const openAlerts = alerts.filter(
-    (a) => !a.resolved
-  ).length;
-
-  return (
-    <>
-      <div className="kpi-grid">
-        <KPI
-          label="Tracked Inventory"
-          value={String(inventory.length)}
-          change="Items"
+          label="Inventory Records"
+          value={String(
+            inventory.length
+          )}
+          change="Live"
           positive
           icon="▣"
         />
 
         <KPI
           label="Routes"
-          value={String(routes.length)}
-          change="Configured"
+          value={String(
+            routes.length
+          )}
+          change="Live"
           positive
           icon="⌁"
         />
 
         <KPI
-          label="Critical Items"
-          value={String(criticalInventory)}
-          change="Attention"
-          positive={criticalInventory === 0}
-          icon="⚠"
+          label="Alerts"
+          value={String(
+            alerts.length
+          )}
+          change="Live"
+          positive
+          icon="!"
         />
 
         <KPI
-          label="Open Alerts"
-          value={String(openAlerts)}
-          change={`${delayedRoutes} route issues`}
-          positive={openAlerts < 3}
-          icon="!"
-        />
-      </div>
-
-      <div className="admin-grid">
-        <AdminCard
-          icon="▣"
-          title="Inventory Configuration"
-          text="Configure synthetic stock thresholds and supply categories."
-          action="Manage Inventory"
-        />
-
-        <AdminCard
-          icon="⌁"
-          title="Route Configuration"
-          text="Configure operational routes and transportation priorities."
-          action="Manage Routes"
-        />
-
-        <AdminCard
-          icon="!"
-          title="Alert Rules"
-          text="Configure threshold-based synthetic risk detection."
-          action="Configure Alerts"
-        />
-
-        <AdminCard
-          icon="⚙"
-          title="System Settings"
-          text="Manage dashboard preferences and operational parameters."
-          action="Open Settings"
+          label="System"
+          value="Online"
+          change="Healthy"
+          positive
+          icon="◉"
         />
       </div>
 
       <Panel
-        title="Synthetic Data Controls"
-        subtitle="No production database is connected"
+        title="System Management"
+        subtitle="Administrator controls"
       >
-        <div className="system-control">
-          <div>
-            <strong>Reset Demo Environment</strong>
-            <p>
-              Restore inventory, routes and alerts to
-              their original synthetic values.
-            </p>
-          </div>
+        <div className="quick-actions">
+          <button
+            onClick={resetDemo}
+          >
+            ↻ Reset Demo Data
+          </button>
 
           <button
-            type="button"
-            className="danger-button"
-            onClick={onReset}
+            onClick={() =>
+              showMessage(
+                "Backup created successfully."
+              )
+            }
           >
-            Reset Demo Data
+            ⬇ Create Backup
+          </button>
+
+          <button
+            onClick={() =>
+              showMessage(
+                "System health check completed."
+              )
+            }
+          >
+            ✓ Run Health Check
+          </button>
+
+          <button
+            onClick={() =>
+              showMessage(
+                "Configuration saved."
+              )
+            }
+          >
+            ⚙ Save Configuration
           </button>
         </div>
       </Panel>
@@ -2170,325 +2709,167 @@ function ManageSystem({
   );
 }
 
-function AdminCard({
-  icon,
-  title,
-  text,
-  action,
-}: {
-  icon: string;
-  title: string;
-  text: string;
-  action: string;
-}) {
-  return (
-    <div className="admin-card">
-      <div className="admin-card-icon">{icon}</div>
-
-      <h3>{title}</h3>
-
-      <p>{text}</p>
-
-      <button
-        type="button"
-        className="secondary-button"
-        onClick={() =>
-          alert(`${action} is available in demo mode.`)
-        }
-      >
-        {action} →
-      </button>
-    </div>
-  );
-}
+/* =========================================================
+   USER MANAGEMENT
+   ========================================================= */
 
 function UserManagement({
   users,
-  onToggle,
-  showMessage,
+  toggleUser,
 }: {
   users: UserItem[];
-  onToggle: (id: number) => void;
-  showMessage: (message: string) => void;
+  toggleUser: (id: number) => void;
 }) {
   return (
-    <>
-      <div className="kpi-grid">
-        <KPI
-          label="Total Users"
-          value={String(users.length)}
-          change="Registered"
-          positive
-          icon="♙"
-        />
+    <Panel
+      title="User Management"
+      subtitle="Manage commanders, captains and administrators"
+    >
+      <div className="alert-list">
+        {users.map((user) => (
+          <div
+            className="alert-row"
+            key={user.id}
+          >
+            <div className="alert-content">
+              <strong>
+                {user.name}
+              </strong>
 
-        <KPI
-          label="Active Users"
-          value={String(
-            users.filter(
-              (u) => u.status === "Active"
-            ).length
-          )}
-          change="Online access"
-          positive
-          icon="✓"
-        />
+              <span>
+                {user.email} •{" "}
+                {user.role}
+              </span>
+            </div>
 
-        <KPI
-          label="Commanders"
-          value={String(
-            users.filter(
-              (u) => u.role === "commander"
-            ).length
-          )}
-          change="Regional"
-          positive
-          icon="C"
-        />
+            <span className="status-pill">
+              {user.status}
+            </span>
 
-        <KPI
-          label="Captains"
-          value={String(
-            users.filter(
-              (u) => u.role === "captain"
-            ).length
-          )}
-          change="Field"
-          positive
-          icon="F"
-        />
+            <button
+              className="secondary-button compact"
+              onClick={() =>
+                toggleUser(user.id)
+              }
+            >
+              Toggle
+            </button>
+          </div>
+        ))}
       </div>
-
-      <Panel
-        title="User Access Management"
-        subtitle="Synthetic user accounts"
-      >
-        <div className="data-table-wrap">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {users.map((user) => (
-                <tr key={user.id}>
-                  <td>
-                    <strong>{user.name}</strong>
-                  </td>
-
-                  <td>{user.email}</td>
-
-                  <td>
-                    <span className="role-tag">
-                      {user.role}
-                    </span>
-                  </td>
-
-                  <td>
-                    <span
-                      className={`status-pill ${
-                        user.status === "Active"
-                          ? "healthy"
-                          : "critical"
-                      }`}
-                    >
-                      {user.status}
-                    </span>
-                  </td>
-
-                  <td>
-                    <button
-                      type="button"
-                      className="secondary-button compact"
-                      onClick={() => {
-                        onToggle(user.id);
-                        showMessage(
-                          `${user.name} status updated.`
-                        );
-                      }}
-                    >
-                      Toggle
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Panel>
-    </>
+    </Panel>
   );
 }
+
+/* =========================================================
+   SUPPLY REQUESTS
+   ========================================================= */
 
 function SupplyRequests({
   showMessage,
 }: {
-  showMessage: (message: string) => void;
+  showMessage: (text: string) => void;
 }) {
   const requests = [
     {
-      id: "REQ-1042",
+      id: "REQ-001",
       item: "Medical Kits",
-      quantity: 80,
+      quantity: "80",
       priority: "High",
-      location: "Forward Post A",
       status: "Pending",
     },
     {
-      id: "REQ-1043",
+      id: "REQ-002",
       item: "Diesel",
-      quantity: 400,
+      quantity: "120 L",
       priority: "Critical",
-      location: "Base Bravo",
       status: "Approved",
     },
     {
-      id: "REQ-1044",
-      item: "Water",
-      quantity: 250,
+      id: "REQ-003",
+      item: "Blankets",
+      quantity: "100",
       priority: "Medium",
-      location: "Base Charlie",
-      status: "In Transit",
+      status: "Pending",
     },
   ];
 
   return (
-    <>
-      <div className="kpi-grid">
-        <KPI
-          label="Open Requests"
-          value="7"
-          change="+2 today"
-          positive={false}
-          icon="＋"
-        />
+    <Panel
+      title="Supply Requests"
+      subtitle="Manage field-level supply requirements"
+    >
+      <div className="alert-list">
+        {requests.map((request) => (
+          <div
+            className="alert-row"
+            key={request.id}
+          >
+            <div className="alert-content">
+              <strong>
+                {request.id} •{" "}
+                {request.item}
+              </strong>
 
-        <KPI
-          label="Critical Requests"
-          value="2"
-          change="Priority"
-          positive={false}
-          icon="⚠"
-        />
-
-        <KPI
-          label="Approved"
-          value="12"
-          change="+4 this week"
-          positive
-          icon="✓"
-        />
-
-        <KPI
-          label="In Transit"
-          value="5"
-          change="Moving"
-          positive
-          icon="⇄"
-        />
-      </div>
-
-      <Panel
-        title="Field Supply Requests"
-        subtitle="Synthetic captain requests"
-      >
-        <div className="request-list">
-          {requests.map((request) => (
-            <div
-              className="request-row"
-              key={request.id}
-            >
-              <div className="request-id">
-                {request.id}
-              </div>
-
-              <div className="request-info">
-                <strong>{request.item}</strong>
-                <span>
-                  {request.quantity} units ·{" "}
-                  {request.location}
-                </span>
-              </div>
-
-              <span
-                className={`status-pill ${request.priority.toLowerCase()}`}
-              >
+              <span>
+                Quantity:{" "}
+                {request.quantity} •
+                Priority:{" "}
                 {request.priority}
               </span>
-
-              <span className="request-status">
-                {request.status}
-              </span>
-
-              <button
-                type="button"
-                className="secondary-button compact"
-                onClick={() =>
-                  showMessage(
-                    `${request.id} reviewed successfully.`
-                  )
-                }
-              >
-                Review
-              </button>
             </div>
-          ))}
-        </div>
-      </Panel>
 
-      <Panel
-        title="Create New Request"
-        subtitle="Demo request action"
+            <span className="status-pill">
+              {request.status}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <button
+        className="primary-button compact"
+        onClick={() =>
+          showMessage(
+            "New supply request created."
+          )
+        }
       >
-        <div className="request-create">
-          <p>
-            Need additional supplies for your field
-            unit? Create a synthetic request.
-          </p>
-
-          <button
-            type="button"
-            className="primary-button"
-            onClick={() =>
-              showMessage(
-                "New supply request created in demo mode."
-              )
-            }
-          >
-            + Create Supply Request
-          </button>
-        </div>
-      </Panel>
-    </>
+        + Create Supply Request
+      </button>
+    </Panel>
   );
 }
 
+/* =========================================================
+   TREND CHART
+   ========================================================= */
+
 function TrendChart() {
-  const values = [52, 61, 58, 72, 68, 84, 79];
+  const values = [
+    58, 64, 61, 72, 69, 81, 87,
+  ];
 
   return (
     <div className="trend-chart">
-      {values.map((value, index) => (
-        <div
-          className="trend-column"
-          key={index}
-        >
+      {values.map(
+        (value, index) => (
           <div
-            className="trend-bar"
-            style={{ height: `${value}%` }}
-          />
+            className="trend-column"
+            key={index}
+          >
+            <div
+              className="trend-bar"
+              style={{
+                height: `${value}%`,
+              }}
+            />
 
-          <span>
-            {["M", "T", "W", "T", "F", "S", "S"][index]}
-          </span>
-        </div>
-      ))}
+            <span>
+              D{index + 1}
+            </span>
+          </div>
+        )
+      )}
     </div>
   );
 }
