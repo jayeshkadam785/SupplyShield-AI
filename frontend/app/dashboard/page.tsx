@@ -43,6 +43,10 @@ type UserItem = {
   status: "Active" | "Inactive";
 };
 
+/* =========================================================
+   INITIAL DATA
+   ========================================================= */
+
 const initialInventory: InventoryItem[] = [
   {
     id: 1,
@@ -222,6 +226,10 @@ const initialUsers: UserItem[] = [
   },
 ];
 
+/* =========================================================
+   ROLE META
+   ========================================================= */
+
 const roleMeta = {
   admin: {
     title: "System Administrator",
@@ -236,6 +244,10 @@ const roleMeta = {
     subtitle: "Field-level supply operations",
   },
 };
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
 
 const navItems = [
   { id: "overview", label: "Overview", icon: "⌂" },
@@ -300,6 +312,10 @@ const pageMeta: Record<string, { title: string; subtitle: string }> = {
   },
 };
 
+/* =========================================================
+   MAIN DASHBOARD
+   ========================================================= */
+
 export default function DashboardPage() {
   const [role, setRole] = useState<Role>("admin");
   const [activePage, setActivePage] = useState("overview");
@@ -321,19 +337,6 @@ export default function DashboardPage() {
 
   const meta =
     pageMeta[activePage] ?? roleMeta[role];
-
-  const activeAlerts =
-    alerts.filter((a) => !a.resolved).length;
-
-  const criticalInventory =
-    inventory.filter(
-      (item) => item.status === "Critical"
-    ).length;
-
-  const delayedRoutes =
-    routes.filter(
-      (route) => route.status !== "Active"
-    ).length;
 
   function showMessage(text: string) {
     setMessage(text);
@@ -388,6 +391,10 @@ export default function DashboardPage() {
         theme === "light" ? "light-theme" : ""
       }`}
     >
+      {/* =====================================================
+          SIDEBAR
+          ===================================================== */}
+
       <aside className="sidebar">
         <div className="brand">
           <div className="brand-mark">S</div>
@@ -404,9 +411,7 @@ export default function DashboardPage() {
           <select
             value={role}
             onChange={(e) =>
-              changeRole(
-                e.target.value as Role
-              )
+              changeRole(e.target.value as Role)
             }
           >
             <option value="admin">
@@ -481,6 +486,42 @@ export default function DashboardPage() {
             </>
           )}
 
+          {role === "commander" && (
+            <>
+              <div className="nav-section-title">
+                COMMAND
+              </div>
+
+              <button
+                className={`nav-button ${
+                  activePage === "routes"
+                    ? "active"
+                    : ""
+                }`}
+                onClick={() =>
+                  setActivePage("routes")
+                }
+              >
+                <span>⌁</span>
+                Mission Routes
+              </button>
+
+              <button
+                className={`nav-button ${
+                  activePage === "alerts"
+                    ? "active"
+                    : ""
+                }`}
+                onClick={() =>
+                  setActivePage("alerts")
+                }
+              >
+                <span>!</span>
+                Command Alerts
+              </button>
+            </>
+          )}
+
           {role === "captain" && (
             <>
               <div className="nav-section-title">
@@ -526,6 +567,10 @@ export default function DashboardPage() {
           </div>
         </div>
       </aside>
+
+      {/* =====================================================
+          MAIN CONTENT
+          ===================================================== */}
 
       <section className="main-content">
         <header className="topbar">
@@ -666,6 +711,53 @@ function Overview({
   role: Role;
   onNavigate: (page: string) => void;
 }) {
+  if (role === "admin") {
+    return (
+      <AdminOverview
+        inventory={inventory}
+        routes={routes}
+        alerts={alerts}
+        onNavigate={onNavigate}
+      />
+    );
+  }
+
+  if (role === "commander") {
+    return (
+      <CommanderOverview
+        inventory={inventory}
+        routes={routes}
+        alerts={alerts}
+        onNavigate={onNavigate}
+      />
+    );
+  }
+
+  return (
+    <CaptainOverview
+      inventory={inventory}
+      routes={routes}
+      alerts={alerts}
+      onNavigate={onNavigate}
+    />
+  );
+}
+
+/* =========================================================
+   ADMIN OVERVIEW
+   ========================================================= */
+
+function AdminOverview({
+  inventory,
+  routes,
+  alerts,
+  onNavigate,
+}: {
+  inventory: InventoryItem[];
+  routes: RouteItem[];
+  alerts: AlertItem[];
+  onNavigate: (page: string) => void;
+}) {
   const activeAlerts =
     alerts.filter((a) => !a.resolved);
 
@@ -674,9 +766,530 @@ function Overview({
       (a) => a.severity === "Critical"
     );
 
+  const criticalInventory =
+    inventory.filter(
+      (i) => i.status === "Critical"
+    );
+
+  const lowInventory =
+    inventory.filter(
+      (i) => i.status === "Low"
+    );
+
+  const totalStock =
+    inventory.reduce(
+      (sum, item) =>
+        sum + item.stock,
+      0
+    );
+
+  const activeRoutes =
+    routes.filter(
+      (r) => r.status === "Active"
+    );
+
+  return (
+    <>
+      {/* ADMIN HERO */}
+
+      <section
+        className="dashboard-panel"
+        style={{
+          borderLeft: "4px solid #38bdf8",
+          marginBottom: 18,
+        }}
+      >
+        <div className="panel-header">
+          <div>
+            <h2>
+              SYSTEM CONTROL CENTER
+            </h2>
+
+            <p>
+              Complete SupplyShield network
+              administration
+            </p>
+          </div>
+
+          <span className="status-pill">
+            SYSTEM ONLINE
+          </span>
+        </div>
+
+        <div
+          style={{
+            marginTop: 18,
+          }}
+        >
+          <strong
+            style={{
+              fontSize: 26,
+            }}
+          >
+            Global Logistics Command
+          </strong>
+
+          <p>
+            Monitor infrastructure,
+            users, inventory, routes and
+            network-wide risks.
+          </p>
+        </div>
+      </section>
+
+      {/* ADMIN KPI */}
+
+      <div className="kpi-grid">
+        <KPI
+          label="Network Coverage"
+          value="96%"
+          change="+4.8%"
+          positive
+          icon="◉"
+        />
+
+        <KPI
+          label="System Uptime"
+          value="99.8%"
+          change="Stable"
+          positive
+          icon="✓"
+        />
+
+        <KPI
+          label="Active Users"
+          value="18"
+          change="+3 this month"
+          positive
+          icon="◎"
+        />
+
+        <KPI
+          label="Critical Incidents"
+          value={String(
+            criticalAlerts.length
+          )}
+          change={
+            criticalAlerts.length > 0
+              ? "Action required"
+              : "Clear"
+          }
+          positive={
+            criticalAlerts.length === 0
+          }
+          icon="!"
+        />
+      </div>
+
+      {/* ADMIN SYSTEM MAP + INFRASTRUCTURE */}
+
+      <div className="dashboard-grid two-column">
+        <Panel
+          title="Global Network Status"
+          subtitle="System-wide infrastructure"
+        >
+          <div className="network-map">
+            <div className="map-grid" />
+
+            <div className="map-node node-a">
+              <strong>HQ</strong>
+              <span>COMMAND</span>
+            </div>
+
+            <div className="map-node node-b">
+              <strong>ALPHA</strong>
+              <span>ONLINE</span>
+            </div>
+
+            <div className="map-node node-c">
+              <strong>BRAVO</strong>
+              <span>RISK</span>
+            </div>
+
+            <div className="map-node node-d">
+              <strong>CHARLIE</strong>
+              <span>ONLINE</span>
+            </div>
+
+            <div className="route-line line-1" />
+            <div className="route-line line-2" />
+            <div className="route-line line-3" />
+          </div>
+
+          <button
+            className="secondary-button compact"
+            onClick={() =>
+              onNavigate("supply")
+            }
+          >
+            Open Supply Network →
+          </button>
+        </Panel>
+
+        <Panel
+          title="Infrastructure Health"
+          subtitle="Core platform services"
+        >
+          <div className="alert-list">
+            <div className="alert-row">
+              <div className="severity-dot low" />
+
+              <div className="alert-content">
+                <strong>
+                  API Gateway
+                </strong>
+
+                <span>
+                  Operational • 99.9% uptime
+                </span>
+              </div>
+
+              <span className="status-pill">
+                ONLINE
+              </span>
+            </div>
+
+            <div className="alert-row">
+              <div className="severity-dot low" />
+
+              <div className="alert-content">
+                <strong>
+                  AI Prediction Engine
+                </strong>
+
+                <span>
+                  Operational • 98.7%
+                </span>
+              </div>
+
+              <span className="status-pill">
+                ONLINE
+              </span>
+            </div>
+
+            <div className="alert-row">
+              <div className="severity-dot high" />
+
+              <div className="alert-content">
+                <strong>
+                  Route Intelligence
+                </strong>
+
+                <span>
+                  Traffic risk detected
+                </span>
+              </div>
+
+              <span className="status-pill">
+                MONITOR
+              </span>
+            </div>
+
+            <div className="alert-row">
+              <div className="severity-dot low" />
+
+              <div className="alert-content">
+                <strong>
+                  Alert Service
+                </strong>
+
+                <span>
+                  All notifications operational
+                </span>
+              </div>
+
+              <span className="status-pill">
+                ONLINE
+              </span>
+            </div>
+          </div>
+        </Panel>
+      </div>
+
+      {/* ADMIN MANAGEMENT MATRIX */}
+
+      <Panel
+        title="System Management Matrix"
+        subtitle="Administrative overview"
+      >
+        <div className="quick-actions">
+          <button
+            onClick={() =>
+              onNavigate("users")
+            }
+          >
+            ◉ User Management
+            <br />
+            <small>
+              18 active accounts
+            </small>
+          </button>
+
+          <button
+            onClick={() =>
+              onNavigate("inventory")
+            }
+          >
+            ▣ Inventory Control
+            <br />
+            <small>
+              {lowInventory.length +
+                criticalInventory.length}{" "}
+              items need attention
+            </small>
+          </button>
+
+          <button
+            onClick={() =>
+              onNavigate("routes")
+            }
+          >
+            ⌁ Route Monitoring
+            <br />
+            <small>
+              {activeRoutes.length} active routes
+            </small>
+          </button>
+
+          <button
+            onClick={() =>
+              onNavigate("analytics")
+            }
+          >
+            ◫ System Analytics
+            <br />
+            <small>
+              Performance intelligence
+            </small>
+          </button>
+        </div>
+      </Panel>
+
+      {/* ADMIN INVENTORY + RISK */}
+
+      <div className="dashboard-grid two-column">
+        <Panel
+          title="Global Inventory Readiness"
+          subtitle="Network-wide stock condition"
+        >
+          <div className="readiness-list">
+            {inventory.map((item) => {
+              const percentage =
+                Math.min(
+                  100,
+                  Math.round(
+                    (item.stock /
+                      item.min) *
+                      100
+                  )
+                );
+
+              return (
+                <div
+                  className="readiness-item"
+                  key={item.id}
+                >
+                  <div className="readiness-header">
+                    <strong>
+                      {item.item}
+                    </strong>
+
+                    <span>
+                      {item.stock} /{" "}
+                      {item.min}
+                    </span>
+                  </div>
+
+                  <div className="progress">
+                    <div
+                      className="progress-bar"
+                      style={{
+                        width: `${percentage}%`,
+                      }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <button
+            className="secondary-button compact"
+            onClick={() =>
+              onNavigate("inventory")
+            }
+          >
+            Open Inventory →
+          </button>
+        </Panel>
+
+        <Panel
+          title="Global Risk Monitor"
+          subtitle="System-wide incidents"
+        >
+          <div className="alert-list">
+            {activeAlerts
+              .slice(0, 5)
+              .map((alert) => (
+                <div
+                  className="alert-row"
+                  key={alert.id}
+                >
+                  <div
+                    className={`severity-dot ${alert.severity.toLowerCase()}`}
+                  />
+
+                  <div className="alert-content">
+                    <strong>
+                      {alert.title}
+                    </strong>
+
+                    <span>
+                      {alert.location} •{" "}
+                      {alert.time}
+                    </span>
+                  </div>
+
+                  <span className="status-pill">
+                    {alert.severity}
+                  </span>
+                </div>
+              ))}
+          </div>
+
+          <button
+            className="secondary-button compact"
+            onClick={() =>
+              onNavigate("alerts")
+            }
+          >
+            Manage Risks →
+          </button>
+        </Panel>
+      </div>
+
+      {/* ADMIN PERFORMANCE */}
+
+      <Panel
+        title="System Performance"
+        subtitle="Synthetic 7-day network performance"
+      >
+        <TrendChart />
+
+        <div className="route-meta">
+          <span>
+            Total Stock:{" "}
+            <strong>
+              {totalStock.toLocaleString()}
+            </strong>
+          </span>
+
+          <span>
+            Active Routes:{" "}
+            <strong>
+              {activeRoutes.length}
+            </strong>
+          </span>
+
+          <span>
+            Critical Stock:{" "}
+            <strong>
+              {criticalInventory.length}
+            </strong>
+          </span>
+        </div>
+      </Panel>
+
+      {/* ADMIN ACTIONS */}
+
+      <Panel
+        title="Administrator Quick Actions"
+        subtitle="High-level system controls"
+      >
+        <div className="quick-actions">
+          <button
+            onClick={() =>
+              onNavigate("manage")
+            }
+          >
+            ⚙ Manage System
+          </button>
+
+          <button
+            onClick={() =>
+              onNavigate("users")
+            }
+          >
+            ◉ Manage Users
+          </button>
+
+          <button
+            onClick={() =>
+              onNavigate("analytics")
+            }
+          >
+            ◫ View Analytics
+          </button>
+
+          <button
+            onClick={() =>
+              onNavigate("reports")
+            }
+          >
+            ▤ Generate Report
+          </button>
+        </div>
+      </Panel>
+    </>
+  );
+}
+
+/* =========================================================
+   COMMANDER OVERVIEW
+   ========================================================= */
+
+function CommanderOverview({
+  inventory,
+  routes,
+  alerts,
+  onNavigate,
+}: {
+  inventory: InventoryItem[];
+  routes: RouteItem[];
+  alerts: AlertItem[];
+  onNavigate: (page: string) => void;
+}) {
+  const activeAlerts =
+    alerts.filter((a) => !a.resolved);
+
   const highAlerts =
     activeAlerts.filter(
-      (a) => a.severity === "High"
+      (a) =>
+        a.severity === "High" ||
+        a.severity === "Critical"
+    );
+
+  const regionalInventory =
+    inventory.filter(
+      (item) =>
+        item.location === "Base Alpha" ||
+        item.location === "Base Bravo"
+    );
+
+  const healthyRegional =
+    regionalInventory.filter(
+      (item) =>
+        item.status === "Healthy"
+    );
+
+  const regionalHealth =
+    Math.round(
+      (healthyRegional.length /
+        Math.max(
+          regionalInventory.length,
+          1
+        )) *
+        100
     );
 
   const activeRoutes =
@@ -694,862 +1307,213 @@ function Overview({
       (r) => r.status === "Blocked"
     );
 
-  const criticalInventory =
-    inventory.filter(
-      (i) => i.status === "Critical"
-    );
-
-  const lowInventory =
-    inventory.filter(
-      (i) => i.status === "Low"
-    );
-
-  const healthyInventory =
-    inventory.filter(
-      (i) => i.status === "Healthy"
-    );
-
-  /* =====================================================
-     ADMIN
-     ===================================================== */
-
-  if (role === "admin") {
-    const totalStock =
-      inventory.reduce(
-        (sum, item) =>
-          sum + item.stock,
-        0
-      );
-
-    return (
-      <>
-        <div className="kpi-grid">
-          <KPI
-            label="Total Operations"
-            value="24"
-            change="+8.4%"
-            positive
-            icon="◉"
-          />
-
-          <KPI
-            label="Network Inventory"
-            value={totalStock.toLocaleString()}
-            change="+6.2%"
-            positive
-            icon="▣"
-          />
-
-          <KPI
-            label="Active Routes"
-            value={String(
-              activeRoutes.length
-            )}
-            change="+2"
-            positive
-            icon="⌁"
-          />
-
-          <KPI
-            label="Critical Alerts"
-            value={String(
-              criticalAlerts.length
-            )}
-            change={
-              criticalAlerts.length > 0
-                ? "Action needed"
-                : "Stable"
-            }
-            positive={
-              criticalAlerts.length === 0
-            }
-            icon="!"
-          />
-        </div>
-
-        <div className="dashboard-grid two-column">
-          <Panel
-            title="System Command Center"
-            subtitle="Complete supply network control"
-          >
-            <div className="network-map">
-              <div className="map-grid" />
-
-              <div className="map-node node-a">
-                <strong>HQ</strong>
-                <span>
-                  Central Command
-                </span>
-              </div>
-
-              <div className="map-node node-b">
-                <strong>Alpha</strong>
-                <span>
-                  Operational
-                </span>
-              </div>
-
-              <div className="map-node node-c">
-                <strong>Bravo</strong>
-                <span>Fuel Risk</span>
-              </div>
-
-              <div className="map-node node-d">
-                <strong>Charlie</strong>
-                <span>Stable</span>
-              </div>
-
-              <div className="route-line line-1" />
-              <div className="route-line line-2" />
-              <div className="route-line line-3" />
-            </div>
-
-            <button
-              className="secondary-button compact"
-              onClick={() =>
-                onNavigate("supply")
-              }
-            >
-              Open Supply Network →
-            </button>
-          </Panel>
-
-          <Panel
-            title="Global Risk Monitor"
-            subtitle="System-wide operational risks"
-          >
-            <div className="alert-list">
-              {activeAlerts
-                .slice(0, 4)
-                .map((alert) => (
-                  <div
-                    className="alert-row"
-                    key={alert.id}
-                  >
-                    <div
-                      className={`severity-dot ${alert.severity.toLowerCase()}`}
-                    />
-
-                    <div className="alert-content">
-                      <strong>
-                        {alert.title}
-                      </strong>
-
-                      <span>
-                        {alert.location} •{" "}
-                        {alert.time}
-                      </span>
-                    </div>
-
-                    <span className="status-pill">
-                      {alert.severity}
-                    </span>
-                  </div>
-                ))}
-            </div>
-
-            <button
-              className="secondary-button compact"
-              onClick={() =>
-                onNavigate("alerts")
-              }
-            >
-              Manage All Risks →
-            </button>
-          </Panel>
-        </div>
-
-        <div className="dashboard-grid two-column">
-          <Panel
-            title="Network Readiness"
-            subtitle="Current system-wide inventory status"
-          >
-            <div className="readiness-list">
-              {inventory
-                .slice(0, 5)
-                .map((item) => {
-                  const percentage =
-                    Math.min(
-                      100,
-                      Math.round(
-                        (item.stock /
-                          item.min) *
-                          100
-                      )
-                    );
-
-                  return (
-                    <div
-                      className="readiness-item"
-                      key={item.id}
-                    >
-                      <div className="readiness-header">
-                        <strong>
-                          {item.item}
-                        </strong>
-
-                        <span>
-                          {item.stock} /{" "}
-                          {item.min}
-                        </span>
-                      </div>
-
-                      <div className="progress">
-                        <div
-                          className="progress-bar"
-                          style={{
-                            width: `${percentage}%`,
-                          }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-            </div>
-
-            <button
-              className="secondary-button compact"
-              onClick={() =>
-                onNavigate("inventory")
-              }
-            >
-              Open System Inventory →
-            </button>
-          </Panel>
-
-          <Panel
-            title="System Performance"
-            subtitle="Synthetic 7-day logistics performance"
-          >
-            <TrendChart />
-
-            <div className="route-meta">
-              <span>
-                Healthy:{" "}
-                <strong>
-                  {healthyInventory.length}
-                </strong>
-              </span>
-
-              <span>
-                Low:{" "}
-                <strong>
-                  {lowInventory.length}
-                </strong>
-              </span>
-
-              <span>
-                Critical:{" "}
-                <strong>
-                  {criticalInventory.length}
-                </strong>
-              </span>
-            </div>
-          </Panel>
-        </div>
-
-        <Panel
-          title="Administrator Quick Actions"
-          subtitle="System-wide management controls"
-        >
-          <div className="quick-actions">
-            <button
-              onClick={() =>
-                onNavigate("inventory")
-              }
-            >
-              ▣ Manage Inventory
-            </button>
-
-            <button
-              onClick={() =>
-                onNavigate("users")
-              }
-            >
-              ◉ Manage Users
-            </button>
-
-            <button
-              onClick={() =>
-                onNavigate("analytics")
-              }
-            >
-              ◫ View Analytics
-            </button>
-
-            <button
-              onClick={() =>
-                onNavigate("reports")
-              }
-            >
-              ▤ Generate Report
-            </button>
-          </div>
-        </Panel>
-      </>
-    );
-  }
-
-  /* =====================================================
-     COMMANDER
-     ===================================================== */
-
-  if (role === "commander") {
-    const regionalInventory =
-      inventory.filter(
-        (item) =>
-          item.location ===
-            "Base Alpha" ||
-          item.location ===
-            "Base Bravo"
-      );
-
-    const regionalCritical =
-      regionalInventory.filter(
-        (item) =>
-          item.status === "Critical"
-      );
-
-    const regionalHealth =
-      regionalInventory.length > 0
-        ? Math.round(
-            (regionalInventory.filter(
-              (item) =>
-                item.status ===
-                "Healthy"
-            ).length /
-              regionalInventory.length) *
-              100
-          )
-        : 0;
-
-    return (
-      <>
-        <div className="kpi-grid">
-          <KPI
-            label="Regional Missions"
-            value="14"
-            change="+5.8%"
-            positive
-            icon="◉"
-          />
-
-          <KPI
-            label="Regional Readiness"
-            value={`${regionalHealth}%`}
-            change="+3.4%"
-            positive
-            icon="▣"
-          />
-
-          <KPI
-            label="Active Routes"
-            value={String(
-              activeRoutes.length
-            )}
-            change="+1"
-            positive
-            icon="⌁"
-          />
-
-          <KPI
-            label="Regional Alerts"
-            value={String(
-              activeAlerts.length
-            )}
-            change={
-              highAlerts.length > 0
-                ? "Review required"
-                : "Stable"
-            }
-            positive={
-              highAlerts.length === 0
-            }
-            icon="!"
-          />
-        </div>
-
-        <div className="dashboard-grid two-column">
-          <Panel
-            title="Regional Operations Map"
-            subtitle="Current commander-area logistics movement"
-          >
-            <div className="network-map">
-              <div className="map-grid" />
-
-              <div className="map-node node-a">
-                <strong>HQ</strong>
-                <span>Command</span>
-              </div>
-
-              <div className="map-node node-b">
-                <strong>Alpha</strong>
-                <span>Active</span>
-              </div>
-
-              <div className="map-node node-c">
-                <strong>Bravo</strong>
-                <span>Delayed</span>
-              </div>
-
-              <div className="map-node node-d">
-                <strong>Charlie</strong>
-                <span>Support</span>
-              </div>
-
-              <div className="route-line line-1" />
-              <div className="route-line line-2" />
-              <div className="route-line line-3" />
-            </div>
-
-            <button
-              className="secondary-button compact"
-              onClick={() =>
-                onNavigate("routes")
-              }
-            >
-              Monitor Regional Routes →
-            </button>
-          </Panel>
-
-          <Panel
-            title="Command Alerts"
-            subtitle="Alerts requiring commander attention"
-          >
-            <div className="alert-list">
-              {activeAlerts
-                .slice(0, 4)
-                .map((alert) => (
-                  <div
-                    className="alert-row"
-                    key={alert.id}
-                  >
-                    <div
-                      className={`severity-dot ${alert.severity.toLowerCase()}`}
-                    />
-
-                    <div className="alert-content">
-                      <strong>
-                        {alert.title}
-                      </strong>
-
-                      <span>
-                        {alert.location} •{" "}
-                        {alert.time}
-                      </span>
-                    </div>
-
-                    <span className="status-pill">
-                      {alert.severity}
-                    </span>
-                  </div>
-                ))}
-            </div>
-
-            <button
-              className="secondary-button compact"
-              onClick={() =>
-                onNavigate("alerts")
-              }
-            >
-              Open Command Alerts →
-            </button>
-          </Panel>
-        </div>
-
-        <div className="dashboard-grid two-column">
-          <Panel
-            title="Regional Inventory"
-            subtitle="Priority supplies across assigned bases"
-          >
-            <div className="readiness-list">
-              {regionalInventory.map(
-                (item) => {
-                  const percentage =
-                    Math.min(
-                      100,
-                      Math.round(
-                        (item.stock /
-                          item.min) *
-                          100
-                      )
-                    );
-
-                  return (
-                    <div
-                      className="readiness-item"
-                      key={item.id}
-                    >
-                      <div className="readiness-header">
-                        <strong>
-                          {item.item}
-                        </strong>
-
-                        <span>
-                          {item.location}
-                        </span>
-                      </div>
-
-                      <div className="progress">
-                        <div
-                          className="progress-bar"
-                          style={{
-                            width: `${percentage}%`,
-                          }}
-                        />
-                      </div>
-                    </div>
-                  );
-                }
-              )}
-            </div>
-
-            {regionalCritical.length >
-              0 && (
-              <div className="route-meta">
-                <span>
-                  ⚠{" "}
-                  {
-                    regionalCritical.length
-                  } critical supply item
-                  {regionalCritical.length >
-                  1
-                    ? "s"
-                    : ""}
-                </span>
-              </div>
-            )}
-
-            <button
-              className="secondary-button compact"
-              onClick={() =>
-                onNavigate("inventory")
-              }
-            >
-              Review Regional Inventory →
-            </button>
-          </Panel>
-
-          <Panel
-            title="Mission Performance"
-            subtitle="Regional logistics performance"
-          >
-            <TrendChart />
-
-            <div className="route-meta">
-              <span>
-                Active:{" "}
-                <strong>
-                  {activeRoutes.length}
-                </strong>
-              </span>
-
-              <span>
-                Delayed:{" "}
-                <strong>
-                  {delayedRoutes.length}
-                </strong>
-              </span>
-
-              <span>
-                Blocked:{" "}
-                <strong>
-                  {blockedRoutes.length}
-                </strong>
-              </span>
-            </div>
-          </Panel>
-        </div>
-
-        <Panel
-          title="Commander Actions"
-          subtitle="Regional command and coordination controls"
-        >
-          <div className="quick-actions">
-            <button
-              onClick={() =>
-                onNavigate("routes")
-              }
-            >
-              ⌁ Monitor Routes
-            </button>
-
-            <button
-              onClick={() =>
-                onNavigate("alerts")
-              }
-            >
-              ! Review Risks
-            </button>
-
-            <button
-              onClick={() =>
-                onNavigate("forecast")
-              }
-            >
-              ◒ Check Forecast
-            </button>
-
-            <button
-              onClick={() =>
-                onNavigate("reports")
-              }
-            >
-              ▤ Command Report
-            </button>
-          </div>
-        </Panel>
-      </>
-    );
-  }
-
-  /* =====================================================
-     CAPTAIN
-     ===================================================== */
-
-  const fieldInventory =
-    inventory.filter(
-      (item) =>
-        item.location ===
-        "Base Alpha"
-    );
-
-  const fieldRoutes =
-    routes.filter(
-      (route) =>
-        route.destination ===
-          "Base Alpha" ||
-        route.origin ===
-          "Base Alpha"
-    );
-
-  const fieldAlerts =
-    alerts.filter(
-      (alert) =>
-        alert.location ===
-          "Base Alpha" ||
-        alert.location ===
-          "Route Alpha-01"
-    );
-
-  const fieldHealthy =
-    fieldInventory.filter(
-      (item) =>
-        item.status ===
-        "Healthy"
-    );
-
-  const fieldLow =
-    fieldInventory.filter(
-      (item) =>
-        item.status === "Low"
-    );
-
-  const fieldCritical =
-    fieldInventory.filter(
-      (item) =>
-        item.status ===
-        "Critical"
-    );
-
-  const fieldActiveAlerts =
-    fieldAlerts.filter(
-      (alert) =>
-        !alert.resolved
-    );
-
   return (
     <>
+      {/* COMMANDER HERO */}
+
+      <section
+        className="dashboard-panel"
+        style={{
+          borderLeft: "4px solid #f59e0b",
+          marginBottom: 18,
+        }}
+      >
+        <div className="panel-header">
+          <div>
+            <h2>
+              MISSION COMMAND
+            </h2>
+
+            <p>
+              Northern Regional Operations
+            </p>
+          </div>
+
+          <span className="status-pill">
+            COMMAND ACTIVE
+          </span>
+        </div>
+
+        <div
+          style={{
+            marginTop: 18,
+          }}
+        >
+          <strong
+            style={{
+              fontSize: 26,
+            }}
+          >
+            Regional Mission Overview
+          </strong>
+
+          <p>
+            Coordinate convoys, manage
+            regional resources and respond
+            to operational threats.
+          </p>
+        </div>
+      </section>
+
+      {/* COMMANDER KPI */}
+
       <div className="kpi-grid">
         <KPI
-          label="Assigned Supplies"
-          value={String(
-            fieldInventory.length
-          )}
-          change="+2"
-          positive
-          icon="▣"
-        />
-
-        <KPI
-          label="Field Stock Health"
-          value={`${Math.round(
-            (fieldHealthy.length /
-              Math.max(
-                fieldInventory.length,
-                1
-              )) *
-              100
-          )}%`}
-          change="+4.1%"
+          label="Active Missions"
+          value="14"
+          change="+5.8%"
           positive
           icon="◉"
         />
 
         <KPI
-          label="Assigned Routes"
+          label="Regional Readiness"
+          value={`${regionalHealth}%`}
+          change="+3.4%"
+          positive
+          icon="▣"
+        />
+
+        <KPI
+          label="Active Convoys"
           value={String(
-            fieldRoutes.length
+            activeRoutes.length
           )}
-          change={
-            fieldRoutes.some(
-              (r) =>
-                r.status !==
-                "Active"
-            )
-              ? "Attention"
-              : "Stable"
-          }
-          positive={
-            !fieldRoutes.some(
-              (r) =>
-                r.status !==
-                "Active"
-            )
-          }
+          change="On schedule"
+          positive
           icon="⌁"
         />
 
         <KPI
-          label="Field Alerts"
+          label="Command Threats"
           value={String(
-            fieldActiveAlerts.length
+            highAlerts.length
           )}
           change={
-            fieldCritical.length >
-            0
-              ? "Supply action needed"
-              : "Monitor"
+            highAlerts.length > 0
+              ? "Review required"
+              : "Stable"
           }
           positive={
-            fieldCritical.length === 0
+            highAlerts.length === 0
           }
           icon="!"
         />
       </div>
 
-      <div className="dashboard-grid two-column">
-        <Panel
-          title="Field Supply Status"
-          subtitle="Your assigned field inventory"
-        >
-          <div className="readiness-list">
-            {fieldInventory.map(
-              (item) => {
-                const percentage =
-                  Math.min(
-                    100,
-                    Math.round(
-                      (item.stock /
-                        item.min) *
-                        100
-                    )
-                  );
+      {/* MISSION COMMAND BOARD */}
 
-                return (
-                  <div
-                    className="readiness-item"
-                    key={item.id}
-                  >
-                    <div className="readiness-header">
-                      <strong>
-                        {item.item}
-                      </strong>
-
-                      <span>
-                        {item.status}
-                      </span>
-                    </div>
-
-                    <div className="progress">
-                      <div
-                        className="progress-bar"
-                        style={{
-                          width: `${percentage}%`,
-                        }}
-                      />
-                    </div>
-                  </div>
-                );
-              }
-            )}
-          </div>
-
-          <div className="route-meta">
-            <span>
-              Healthy:{" "}
-              <strong>
-                {fieldHealthy.length}
-              </strong>
-            </span>
-
-            <span>
-              Low:{" "}
-              <strong>
-                {fieldLow.length}
-              </strong>
-            </span>
-
-            <span>
-              Critical:{" "}
-              <strong>
-                {fieldCritical.length}
-              </strong>
-            </span>
-          </div>
-
+      <Panel
+        title="Mission Command Board"
+        subtitle="Current regional operations"
+      >
+        <div className="quick-actions">
           <button
-            className="secondary-button compact"
             onClick={() =>
-              onNavigate("inventory")
+              onNavigate("routes")
             }
           >
-            Open Field Inventory →
+            <strong>
+              MISSION ALPHA
+            </strong>
+            <br />
+            Base Alpha Resupply
+            <br />
+            <small>
+              STATUS: ON SCHEDULE
+            </small>
           </button>
-        </Panel>
 
+          <button
+            onClick={() =>
+              onNavigate("routes")
+            }
+          >
+            <strong>
+              MISSION BRAVO
+            </strong>
+            <br />
+            Northern Sector
+            <br />
+            <small>
+              STATUS: DELAYED
+            </small>
+          </button>
+
+          <button
+            onClick={() =>
+              onNavigate("routes")
+            }
+          >
+            <strong>
+              MISSION CHARLIE
+            </strong>
+            <br />
+            Medical Zone
+            <br />
+            <small>
+              STATUS: ACTIVE
+            </small>
+          </button>
+
+          <button
+            onClick={() =>
+              onNavigate("routes")
+            }
+          >
+            <strong>
+              MISSION DELTA
+            </strong>
+            <br />
+            Forward Sector
+            <br />
+            <small>
+              STATUS: BLOCKED
+            </small>
+          </button>
+        </div>
+      </Panel>
+
+      {/* COMMAND VIEW */}
+
+      <div className="dashboard-grid two-column">
         <Panel
-          title="My Assigned Routes"
-          subtitle="Current field transportation tasks"
+          title="Regional Convoy Board"
+          subtitle="Live transportation operations"
         >
           <div className="alert-list">
-            {fieldRoutes.map(
-              (route) => (
+            {routes.map((route) => (
+              <div
+                className="alert-row"
+                key={route.id}
+              >
                 <div
-                  className="alert-row"
-                  key={route.id}
-                >
-                  <div
-                    className={`severity-dot ${
-                      route.risk ===
-                      "High"
-                        ? "critical"
-                        : route.risk ===
-                          "Medium"
-                        ? "high"
-                        : "low"
-                    }`}
-                  />
+                  className={`severity-dot ${
+                    route.risk === "High"
+                      ? "critical"
+                      : route.risk ===
+                        "Medium"
+                      ? "high"
+                      : "low"
+                  }`}
+                />
 
-                  <div className="alert-content">
-                    <strong>
-                      {route.name}
-                    </strong>
+                <div className="alert-content">
+                  <strong>
+                    {route.name}
+                  </strong>
 
-                    <span>
-                      {route.origin} →{" "}
-                      {
-                        route.destination
-                      }
-                    </span>
-                  </div>
-
-                  <span className="status-pill">
-                    {route.status}
+                  <span>
+                    {route.origin} →{" "}
+                    {route.destination}
                   </span>
                 </div>
-              )
-            )}
+
+                <span className="status-pill">
+                  {route.status}
+                </span>
+              </div>
+            ))}
           </div>
 
           <button
@@ -1558,34 +1522,32 @@ function Overview({
               onNavigate("routes")
             }
           >
-            Open Field Routes →
+            Open Route Intelligence →
           </button>
         </Panel>
-      </div>
 
-      <div className="dashboard-grid two-column">
         <Panel
-          title="Field Alerts"
-          subtitle="Issues affecting your assigned area"
+          title="Command Threat Assessment"
+          subtitle="Decisions requiring attention"
         >
           <div className="alert-list">
-            {fieldActiveAlerts.length ===
+            {highAlerts.length ===
             0 ? (
               <div className="alert-row">
                 <div className="alert-content">
                   <strong>
-                    No active field alerts
+                    No major threats
                   </strong>
 
                   <span>
-                    Current field operations
+                    Regional operations
                     are stable.
                   </span>
                 </div>
               </div>
             ) : (
-              fieldActiveAlerts
-                .slice(0, 4)
+              highAlerts
+                .slice(0, 5)
                 .map((alert) => (
                   <div
                     className="alert-row"
@@ -1620,33 +1582,796 @@ function Overview({
               onNavigate("alerts")
             }
           >
-            View Field Alerts →
+            Review Command Alerts →
           </button>
+        </Panel>
+      </div>
+
+      {/* REGIONAL SUPPLY PRIORITIES */}
+
+      <Panel
+        title="Regional Supply Priorities"
+        subtitle="Commander-level resource allocation"
+      >
+        <div className="quick-actions">
+          {regionalInventory.map(
+            (item) => (
+              <button
+                key={item.id}
+                onClick={() =>
+                  onNavigate(
+                    "inventory"
+                  )
+                }
+              >
+                <strong>
+                  {item.item}
+                </strong>
+                <br />
+                {item.location}
+                <br />
+                <small>
+                  Stock: {item.stock} /
+                  Min: {item.min}
+                </small>
+                <br />
+                <small>
+                  Status: {item.status}
+                </small>
+              </button>
+            )
+          )}
+        </div>
+      </Panel>
+
+      {/* COMMANDER PERFORMANCE */}
+
+      <div className="dashboard-grid two-column">
+        <Panel
+          title="Regional Operations"
+          subtitle="Commander operational metrics"
+        >
+          <div className="readiness-list">
+            <div className="readiness-item">
+              <div className="readiness-header">
+                <strong>
+                  Convoy Readiness
+                </strong>
+
+                <span>78%</span>
+              </div>
+
+              <div className="progress">
+                <div
+                  className="progress-bar"
+                  style={{
+                    width: "78%",
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="readiness-item">
+              <div className="readiness-header">
+                <strong>
+                  Supply Readiness
+                </strong>
+
+                <span>
+                  {regionalHealth}%
+                </span>
+              </div>
+
+              <div className="progress">
+                <div
+                  className="progress-bar"
+                  style={{
+                    width: `${regionalHealth}%`,
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="readiness-item">
+              <div className="readiness-header">
+                <strong>
+                  Mission Completion
+                </strong>
+
+                <span>91%</span>
+              </div>
+
+              <div className="progress">
+                <div
+                  className="progress-bar"
+                  style={{
+                    width: "91%",
+                  }}
+                />
+              </div>
+            </div>
+          </div>
         </Panel>
 
         <Panel
-          title="Field Operations Trend"
-          subtitle="Recent synthetic delivery performance"
+          title="Mission Performance"
+          subtitle="Regional 7-day trend"
         >
           <TrendChart />
 
           <div className="route-meta">
             <span>
-              Field Routes:{" "}
+              Active:{" "}
+              <strong>
+                {activeRoutes.length}
+              </strong>
+            </span>
+
+            <span>
+              Delayed:{" "}
+              <strong>
+                {delayedRoutes.length}
+              </strong>
+            </span>
+
+            <span>
+              Blocked:{" "}
+              <strong>
+                {blockedRoutes.length}
+              </strong>
+            </span>
+          </div>
+        </Panel>
+      </div>
+
+      {/* COMMANDER ACTIONS */}
+
+      <Panel
+        title="Commander Actions"
+        subtitle="Regional decision controls"
+      >
+        <div className="quick-actions">
+          <button
+            onClick={() =>
+              onNavigate("routes")
+            }
+          >
+            ⌁ Reassign / Monitor Convoy
+          </button>
+
+          <button
+            onClick={() =>
+              onNavigate("alerts")
+            }
+          >
+            ! Escalate Risk
+          </button>
+
+          <button
+            onClick={() =>
+              onNavigate("forecast")
+            }
+          >
+            ◒ Check Demand Forecast
+          </button>
+
+          <button
+            onClick={() =>
+              onNavigate("reports")
+            }
+          >
+            ▤ Generate Command Report
+          </button>
+        </div>
+      </Panel>
+    </>
+  );
+}
+
+/* =========================================================
+   CAPTAIN OVERVIEW
+   ========================================================= */
+
+function CaptainOverview({
+  inventory,
+  routes,
+  alerts,
+  onNavigate,
+}: {
+  inventory: InventoryItem[];
+  routes: RouteItem[];
+  alerts: AlertItem[];
+  onNavigate: (page: string) => void;
+}) {
+  const fieldInventory =
+    inventory.filter(
+      (item) =>
+        item.location ===
+        "Base Alpha"
+    );
+
+  const fieldRoutes =
+    routes.filter(
+      (route) =>
+        route.origin ===
+          "Base Alpha" ||
+        route.destination ===
+          "Base Alpha"
+    );
+
+  const fieldAlerts =
+    alerts.filter(
+      (alert) =>
+        !alert.resolved &&
+        (
+          alert.location ===
+            "Base Alpha" ||
+          alert.location ===
+            "Route Alpha-01"
+        )
+    );
+
+  const healthy =
+    fieldInventory.filter(
+      (item) =>
+        item.status ===
+        "Healthy"
+    ).length;
+
+  const low =
+    fieldInventory.filter(
+      (item) =>
+        item.status === "Low"
+    ).length;
+
+  const critical =
+    fieldInventory.filter(
+      (item) =>
+        item.status ===
+        "Critical"
+    ).length;
+
+  const readiness =
+    Math.round(
+      (healthy /
+        Math.max(
+          fieldInventory.length,
+          1
+        )) *
+        100
+    );
+
+  return (
+    <>
+      {/* CAPTAIN HERO */}
+
+      <section
+        className="dashboard-panel"
+        style={{
+          borderLeft: "4px solid #22c55e",
+          marginBottom: 18,
+        }}
+      >
+        <div className="panel-header">
+          <div>
+            <h2>
+              FIELD OPERATIONS
+            </h2>
+
+            <p>
+              Captain Arjun • Base Alpha
+            </p>
+          </div>
+
+          <span className="status-pill">
+            FIELD DUTY ACTIVE
+          </span>
+        </div>
+
+        <div
+          style={{
+            marginTop: 18,
+          }}
+        >
+          <strong
+            style={{
+              fontSize: 26,
+            }}
+          >
+            Today's Mission Briefing
+          </strong>
+
+          <p>
+            Manage assigned supplies,
+            routes, field alerts and
+            immediate requests.
+          </p>
+        </div>
+      </section>
+
+      {/* CAPTAIN KPI */}
+
+      <div className="kpi-grid">
+        <KPI
+          label="Mission Readiness"
+          value={`${readiness}%`}
+          change={
+            critical > 0
+              ? "Supply action needed"
+              : "Ready"
+          }
+          positive={critical === 0}
+          icon="◉"
+        />
+
+        <KPI
+          label="Available Supplies"
+          value={String(
+            fieldInventory.length
+          )}
+          change={`${healthy} healthy`}
+          positive
+          icon="▣"
+        />
+
+        <KPI
+          label="Assigned Routes"
+          value={String(
+            fieldRoutes.length
+          )}
+          change={
+            fieldRoutes.some(
+              (r) =>
+                r.status !==
+                "Active"
+            )
+              ? "Attention"
+              : "Stable"
+          }
+          positive={
+            !fieldRoutes.some(
+              (r) =>
+                r.status !==
+                "Active"
+            )
+          }
+          icon="⌁"
+        />
+
+        <KPI
+          label="Field Alerts"
+          value={String(
+            fieldAlerts.length
+          )}
+          change={
+            fieldAlerts.length > 0
+              ? "Review"
+              : "Clear"
+          }
+          positive={
+            fieldAlerts.length === 0
+          }
+          icon="!"
+        />
+      </div>
+
+      {/* CURRENT MISSION */}
+
+      <Panel
+        title="Current Field Mission"
+        subtitle="Primary assignment"
+      >
+        <div className="quick-actions">
+          <button>
+            <strong>
+              MISSION
+            </strong>
+            <br />
+            Alpha Resupply Operation
+            <br />
+            <small>
+              STATUS: ACTIVE
+            </small>
+          </button>
+
+          <button>
+            <strong>
+              DESTINATION
+            </strong>
+            <br />
+            Forward Post 01
+            <br />
+            <small>
+              DISTANCE: 18 KM
+            </small>
+          </button>
+
+          <button>
+            <strong>
+              ETA
+            </strong>
+            <br />
+            02h 15m
+            <br />
+            <small>
+              ON SCHEDULE
+            </small>
+          </button>
+
+          <button>
+            <strong>
+              TEAM
+            </strong>
+            <br />
+            4 Personnel
+            <br />
+            <small>
+              READY
+            </small>
+          </button>
+        </div>
+      </Panel>
+
+      {/* FIELD SUPPLY + ROUTES */}
+
+      <div className="dashboard-grid two-column">
+        <Panel
+          title="My Supply Status"
+          subtitle="Supplies assigned to Base Alpha"
+        >
+          <div className="readiness-list">
+            {fieldInventory.map(
+              (item) => {
+                const percentage =
+                  Math.min(
+                    100,
+                    Math.round(
+                      (item.stock /
+                        item.min) *
+                        100
+                    )
+                  );
+
+                return (
+                  <div
+                    className="readiness-item"
+                    key={item.id}
+                  >
+                    <div className="readiness-header">
+                      <strong>
+                        {item.item}
+                      </strong>
+
+                      <span>
+                        {item.stock} /{" "}
+                        {item.min}
+                      </span>
+                    </div>
+
+                    <div className="progress">
+                      <div
+                        className="progress-bar"
+                        style={{
+                          width: `${percentage}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                );
+              }
+            )}
+          </div>
+
+          <div className="route-meta">
+            <span>
+              Healthy:{" "}
+              <strong>
+                {healthy}
+              </strong>
+            </span>
+
+            <span>
+              Low:{" "}
+              <strong>
+                {low}
+              </strong>
+            </span>
+
+            <span>
+              Critical:{" "}
+              <strong>
+                {critical}
+              </strong>
+            </span>
+          </div>
+
+          <button
+            className="secondary-button compact"
+            onClick={() =>
+              onNavigate("inventory")
+            }
+          >
+            Update Field Inventory →
+          </button>
+        </Panel>
+
+        <Panel
+          title="My Assigned Routes"
+          subtitle="Current field movement"
+        >
+          <div className="alert-list">
+            {fieldRoutes.map(
+              (route) => (
+                <div
+                  className="alert-row"
+                  key={route.id}
+                >
+                  <div
+                    className={`severity-dot ${
+                      route.risk ===
+                      "High"
+                        ? "critical"
+                        : route.risk ===
+                          "Medium"
+                        ? "high"
+                        : "low"
+                    }`}
+                  />
+
+                  <div className="alert-content">
+                    <strong>
+                      {route.name}
+                    </strong>
+
+                    <span>
+                      {route.origin} →{" "}
+                      {
+                        route.destination
+                      }{" "}
+                      • ETA{" "}
+                      {route.eta}
+                    </span>
+                  </div>
+
+                  <span className="status-pill">
+                    {route.status}
+                  </span>
+                </div>
+              )
+            )}
+          </div>
+
+          <button
+            className="secondary-button compact"
+            onClick={() =>
+              onNavigate("routes")
+            }
+          >
+            Open My Routes →
+          </button>
+        </Panel>
+      </div>
+
+      {/* FIELD ALERTS */}
+
+      <Panel
+        title="Immediate Field Alerts"
+        subtitle="Issues affecting your current mission"
+      >
+        <div className="alert-list">
+          {fieldAlerts.length ===
+          0 ? (
+            <div className="alert-row">
+              <div className="alert-content">
+                <strong>
+                  ✓ No immediate alerts
+                </strong>
+
+                <span>
+                  Field operations are
+                  currently stable.
+                </span>
+              </div>
+            </div>
+          ) : (
+            fieldAlerts.map(
+              (alert) => (
+                <div
+                  className="alert-row"
+                  key={alert.id}
+                >
+                  <div
+                    className={`severity-dot ${alert.severity.toLowerCase()}`}
+                  />
+
+                  <div className="alert-content">
+                    <strong>
+                      {alert.title}
+                    </strong>
+
+                    <span>
+                      {alert.description}
+                    </span>
+                  </div>
+
+                  <span className="status-pill">
+                    {alert.severity}
+                  </span>
+                </div>
+              )
+            )
+          )}
+        </div>
+
+        <button
+          className="secondary-button compact"
+          onClick={() =>
+            onNavigate("alerts")
+          }
+        >
+          View Field Alerts →
+        </button>
+      </Panel>
+
+      {/* FIELD REQUEST CENTER */}
+
+      <Panel
+        title="Field Request Center"
+        subtitle="Quickly request resources"
+      >
+        <div className="quick-actions">
+          <button
+            onClick={() =>
+              onNavigate("requests")
+            }
+          >
+            + Request Medical Kits
+          </button>
+
+          <button
+            onClick={() =>
+              onNavigate("requests")
+            }
+          >
+            + Request Diesel
+          </button>
+
+          <button
+            onClick={() =>
+              onNavigate("requests")
+            }
+          >
+            + Request Water
+          </button>
+
+          <button
+            onClick={() =>
+              onNavigate("requests")
+            }
+          >
+            + Create Supply Request
+          </button>
+        </div>
+      </Panel>
+
+      {/* FIELD PERFORMANCE */}
+
+      <div className="dashboard-grid two-column">
+        <Panel
+          title="Mission Readiness"
+          subtitle="Field operation readiness"
+        >
+          <div className="readiness-list">
+            <div className="readiness-item">
+              <div className="readiness-header">
+                <strong>
+                  Supply Readiness
+                </strong>
+
+                <span>
+                  {readiness}%
+                </span>
+              </div>
+
+              <div className="progress">
+                <div
+                  className="progress-bar"
+                  style={{
+                    width: `${readiness}%`,
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="readiness-item">
+              <div className="readiness-header">
+                <strong>
+                  Route Readiness
+                </strong>
+
+                <span>
+                  {fieldRoutes.every(
+                    (r) =>
+                      r.status ===
+                      "Active"
+                  )
+                    ? "100%"
+                    : "70%"}
+                </span>
+              </div>
+
+              <div className="progress">
+                <div
+                  className="progress-bar"
+                  style={{
+                    width:
+                      fieldRoutes.every(
+                        (r) =>
+                          r.status ===
+                          "Active"
+                      )
+                        ? "100%"
+                        : "70%",
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="readiness-item">
+              <div className="readiness-header">
+                <strong>
+                  Team Readiness
+                </strong>
+
+                <span>
+                  95%
+                </span>
+              </div>
+
+              <div className="progress">
+                <div
+                  className="progress-bar"
+                  style={{
+                    width: "95%",
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </Panel>
+
+        <Panel
+          title="Field Operations Trend"
+          subtitle="Recent synthetic mission performance"
+        >
+          <TrendChart />
+
+          <div className="route-meta">
+            <span>
+              Routes:{" "}
               <strong>
                 {fieldRoutes.length}
               </strong>
             </span>
 
             <span>
-              Active Alerts:{" "}
+              Alerts:{" "}
               <strong>
-                {fieldActiveAlerts.length}
+                {fieldAlerts.length}
+              </strong>
+            </span>
+
+            <span>
+              Readiness:{" "}
+              <strong>
+                {readiness}%
               </strong>
             </span>
           </div>
         </Panel>
       </div>
+
+      {/* CAPTAIN ACTIONS */}
 
       <Panel
         title="Captain Quick Actions"
@@ -1666,7 +2391,7 @@ function Overview({
               onNavigate("inventory")
             }
           >
-            ▣ Check My Inventory
+            ▣ Update Inventory
           </button>
 
           <button
@@ -1674,7 +2399,7 @@ function Overview({
               onNavigate("routes")
             }
           >
-            ⌁ Check My Routes
+            ⌁ Report Route Issue
           </button>
 
           <button
